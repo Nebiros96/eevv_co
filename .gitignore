@@ -1,0 +1,32 @@
+# Credenciales
+config.yml
+.env
+.env.*
+
+# Quarto
+.quarto/
+*_cache/
+*_files/
+*_freeze/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# R
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Datos
+*.csv
+*.xls
+*.xlsx
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
