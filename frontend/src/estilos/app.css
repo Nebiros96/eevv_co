@@ -1,0 +1,310 @@
+:root {
+  color: #0f172a;
+  background: #f3f5f8;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  line-height: 1.4;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+}
+
+button, select, input { font: inherit; }
+
+.estado-pagina {
+  margin: 3rem auto;
+  max-width: 40rem;
+  color: #475569;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+}
+
+.encabezado {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.9rem 1.25rem;
+  background: #0f2744;
+  color: #f8fafc;
+}
+
+.encabezado h1,
+.encabezado p { margin: 0; }
+
+.encabezado p {
+  color: #cbd5e1;
+  font-size: 0.92rem;
+}
+
+.encabezado nav { display: flex; gap: 0.4rem; }
+
+.encabezado button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.encabezado button.activo { background: #f8fafc; color: #0f2744; }
+
+.barra {
+  padding: 1rem;
+  background: #fff;
+  border-right: 1px solid #e2e8f0;
+}
+
+.barra label {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.barra select,
+.barra input,
+.barra .buscador-disparador {
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 450;
+}
+
+.buscador-disparador {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+}
+
+.buscador-disparador::after {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 2px solid #64748b;
+  border-bottom: 2px solid #64748b;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.barra .campo {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.buscador { position: relative; }
+
+.buscador-lista {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  max-height: 220px;
+  overflow: auto;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 12%);
+}
+
+.buscador-lista button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 6px;
+  padding: 0.35rem 0.45rem;
+  background: transparent;
+  font-weight: 450;
+  cursor: pointer;
+}
+
+.buscador-lista button.activo,
+.buscador-lista button:hover { background: #e0f2f1; }
+
+.buscador-lista button[aria-selected="true"] { color: #0f766e; }
+
+.buscador-vacio {
+  padding: 0.4rem 0.45rem;
+  color: #64748b;
+  font-weight: 450;
+}
+
+.nota {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+.reiniciar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-top: 0.65rem;
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f766e;
+  cursor: pointer;
+}
+.reiniciar:hover { background: #e0f2f1; }
+.reiniciar svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.contenido {
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.indicador {
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  color: #fff;
+  min-height: 92px;
+}
+
+.indicador span { display: block; font-size: 0.82rem; opacity: 0.92; }
+.indicador strong { display: block; margin-top: 0.35rem; font-size: 1.45rem; }
+.indicador-causa strong {
+  font-size: var(--medida-causa, 1.05rem);
+  line-height: 1.28;
+  text-wrap: balance;
+}
+.indicador-comparativa {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.indicador-comparativa > span { flex: none; margin: 0; }
+.indicador-comparativa strong {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 0.35rem 0.7rem;
+  margin-top: 0;
+  min-width: 0;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.indicador-comparativa strong .lado-sexo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  position: relative;
+  font-size: inherit;
+  opacity: 1;
+  white-space: nowrap;
+}
+.indicador-comparativa .icono-sexo {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex: none;
+  opacity: 1;
+  background: transparent;
+}
+.solo-lectura {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tono-nacimientos { background: #0f766e; }
+.tono-defunciones { background: #be123c; }
+.tono-relacion { background: #c2410c; }
+.tono-diferencia { background: #1d4ed8; }
+.tono-hombres { background: #6d28d9; }
+
+.rejilla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tarjeta {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.85rem 1rem 1rem;
+}
+
+.tarjeta h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.aviso { color: #64748b; margin: 1rem 0; }
+.aviso.error { color: #be123c; }
+
+.marco-mapa { position: relative; }
+.mapa { height: 480px; border-radius: 10px; background: #dbe4ee; }
+.leyenda {
+  position: absolute;
+  z-index: 800;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 92%);
+  color: #334155;
+  font-size: 0.75rem;
+}
+.leyenda-barra {
+  width: 7.5rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #9f1239, #f8fafc 50%, #0f766e);
+}
+
+@media (max-width: 1100px) {
+  .app { grid-template-columns: 1fr; }
+  .indicadores, .rejilla { grid-template-columns: 1fr; }
+  .barra { border-right: 0; border-bottom: 1px solid #e2e8f0; }
+}
