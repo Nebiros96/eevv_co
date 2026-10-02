@@ -247,6 +247,23 @@ def opciones_municipio(municipios: pd.DataFrame, departamento: str | None) -> di
     return {TODOS: "Todos", **dict(pares)}
 
 
+# La vista colapsa países en Extranjero y los residuos en Sin Información.
+# El CASE lleva cada hecho a la fila visible de esa vista.
+CRUCE_GEOGRAFIA = """
+JOIN geografia.vw_dim_geografia g
+  ON g.cod_departamento = CASE f.tipo_registro
+       WHEN 'extranjero' THEN '75'
+       WHEN 'sin_informacion' THEN '01'
+       ELSE f.cod_departamento
+     END
+ AND g.cod_municipio = CASE f.tipo_registro
+       WHEN 'extranjero' THEN '75000'
+       WHEN 'sin_informacion' THEN '01999'
+       ELSE f.cod_municipio
+     END
+"""
+
+
 def cargar_tablero() -> dict:
     """Carga agregados de residencia, causas y coordenadas. Reutiliza la carga en el mismo proceso."""
     global _TABLERO
@@ -259,64 +276,65 @@ def cargar_tablero() -> dict:
             cur.execute("SET statement_timeout = '90s'")
         nacimientos = _consultar(
             conn,
-            """
-            SELECT anio,
-                   cod_departamento,
-                   departamento,
-                   cod_municipio,
-                   municipio,
-                   COALESCE(NULLIF(sexo, ''), 'Indeterminado') AS sexo,
-                   SUM(nacimientos)::bigint AS nacimientos
-            FROM nacimientos.fact_nac_residencia
+            f"""
+            SELECT f.anio,
+                   g.cod_departamento,
+                   g.departamento,
+                   g.cod_municipio,
+                   g.municipio,
+                   COALESCE(NULLIF(f.sexo, ''), 'Indeterminado') AS sexo,
+                   SUM(f.nacimientos)::bigint AS nacimientos
+            FROM nacimientos.fact_nac_residencia f
+            {CRUCE_GEOGRAFIA}
             GROUP BY 1, 2, 3, 4, 5, 6
             """,
             (),
         )
         defunciones = _consultar(
             conn,
-            """
-            SELECT anio,
-                   cod_departamento,
-                   departamento,
-                   cod_municipio,
-                   municipio,
-                   COALESCE(NULLIF(sexo, ''), 'Indeterminado') AS sexo,
-                   SUM(defunciones)::bigint AS defunciones
-            FROM defunciones.fact_def_causa
+            f"""
+            SELECT f.anio,
+                   g.cod_departamento,
+                   g.departamento,
+                   g.cod_municipio,
+                   g.municipio,
+                   COALESCE(NULLIF(f.sexo, ''), 'Indeterminado') AS sexo,
+                   SUM(f.defunciones)::bigint AS defunciones
+            FROM defunciones.fact_def_causa f
+            {CRUCE_GEOGRAFIA}
             GROUP BY 1, 2, 3, 4, 5, 6
             """,
             (),
         )
         causas = _consultar(
             conn,
-            """
-            SELECT anio,
-                   cod_departamento,
-                   departamento,
-                   cod_municipio,
-                   municipio,
-                   cod_causa,
-                   causa,
-                   COALESCE(NULLIF(grupo_edad, ''), 'Edad desconocida') AS grupo_edad,
-                   COALESCE(NULLIF(sexo, ''), 'Indeterminado') AS sexo,
-                   SUM(defunciones)::bigint AS defunciones
-            FROM defunciones.fact_def_causa
+            f"""
+            SELECT f.anio,
+                   g.cod_departamento,
+                   g.departamento,
+                   g.cod_municipio,
+                   g.municipio,
+                   f.cod_causa,
+                   f.causa,
+                   COALESCE(NULLIF(f.grupo_edad, ''), 'Edad desconocida') AS grupo_edad,
+                   COALESCE(NULLIF(f.sexo, ''), 'Indeterminado') AS sexo,
+                   SUM(f.defunciones)::bigint AS defunciones
+            FROM defunciones.fact_def_causa f
+            {CRUCE_GEOGRAFIA}
             GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9
             """,
             (),
         )
-        coords = _consultar(
+        catalogo_geo = _consultar(
             conn,
             """
             SELECT cod_departamento,
+                   departamento,
                    cod_municipio,
-                   AVG(latitud)::float AS latitud,
-                   AVG(longitud)::float AS longitud
-            FROM geografia.dim_geografia
-            WHERE latitud IS NOT NULL
-              AND longitud IS NOT NULL
-              AND tipo_registro = 'municipio'
-            GROUP BY 1, 2
+                   municipio,
+                   latitud::float AS latitud,
+                   longitud::float AS longitud
+            FROM geografia.vw_dim_geografia
             """,
             (),
         )
@@ -345,13 +363,15 @@ def cargar_tablero() -> dict:
         catalogo[["cod_causa", "causa"]], on="cod_causa", how="left"
     )
 
-    territorios = pd.concat(
-        [
-            nacimientos[["cod_departamento", "departamento", "cod_municipio", "municipio"]],
-            defunciones[["cod_departamento", "departamento", "cod_municipio", "municipio"]],
-        ],
-        ignore_index=True,
-    ).drop_duplicates()
+    for columna in ("cod_departamento", "departamento", "cod_municipio", "municipio"):
+        catalogo_geo[columna] = catalogo_geo[columna].fillna("").astype(str).str.strip()
+    coords = catalogo_geo.loc[
+        catalogo_geo["latitud"].notna() & catalogo_geo["longitud"].notna(),
+        ["cod_departamento", "cod_municipio", "latitud", "longitud"],
+    ].copy()
+    territorios = catalogo_geo[
+        ["cod_departamento", "departamento", "cod_municipio", "municipio"]
+    ].drop_duplicates()
     territorios["clave"] = territorios["cod_departamento"] + "|" + territorios["cod_municipio"]
     territorios["etiqueta"] = territorios["municipio"] + " · " + territorios["departamento"]
     territorios = territorios.sort_values("etiqueta", key=lambda s: s.map(_clave_orden))

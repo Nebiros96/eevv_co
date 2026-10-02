@@ -138,7 +138,28 @@ button, select, input { font: inherit; }
 .aviso { color: #64748b; margin: 1rem 0; }
 .aviso.error { color: #be123c; }
 
-.mapa { height: 480px; border-radius: 10px; }
+.marco-mapa { position: relative; }
+.mapa { height: 480px; border-radius: 10px; background: #dbe4ee; }
+.leyenda {
+  position: absolute;
+  z-index: 800;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 92%);
+  color: #334155;
+  font-size: 0.75rem;
+}
+.leyenda-barra {
+  width: 7.5rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #9f1239, #f8fafc 50%, #0f766e);
+}
 
 @media (max-width: 1100px) {
   .app { grid-template-columns: 1fr; }

@@ -31,7 +31,7 @@ export function Disposicion() {
           ))}
         </nav>
       </header>
-      <BarraLateral />
+      <BarraLateral pagina={pagina} />
       <main className="contenido">{pagina === "panorama" ? <Panorama /> : <Defunciones />}</main>
     </div>
   );

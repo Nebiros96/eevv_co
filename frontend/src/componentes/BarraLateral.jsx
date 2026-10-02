@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
 
-export function BarraLateral() {
+export function BarraLateral({ pagina }) {
   const { catalogos } = useDatos();
   const { filtros, actualizar } = useFiltros();
   const [buscaMunicipio, setBuscaMunicipio] = useState("");
@@ -29,8 +29,7 @@ export function BarraLateral() {
   return (
     <aside className="barra">
       <p className="nota">
-        Territorio de residencia. La causa solo cambia la página Defunciones. Las series anuales
-        conservan todos los años del territorio.
+        Territorio de residencia. Las series anuales conservan todos los años del territorio.
       </p>
       <label>
         Año
@@ -83,22 +82,24 @@ export function BarraLateral() {
           })}
         </select>
       </label>
-      <label>
-        Causa de defunción
-        <input
-          value={buscaCausa}
-          placeholder="Buscar causa"
-          onChange={(evento) => setBuscaCausa(evento.target.value)}
-        />
-        <select value={filtros.causa} onChange={(evento) => actualizar("causa", evento.target.value)}>
-          <option value="Todas">Todas las causas</option>
-          {causas.map((fila) => (
-            <option key={fila.cod_causa} value={fila.cod_causa}>
-              {fila.causa}
-            </option>
-          ))}
-        </select>
-      </label>
+      {pagina === "defunciones" ? (
+        <label>
+          Causa de defunción
+          <input
+            value={buscaCausa}
+            placeholder="Buscar causa"
+            onChange={(evento) => setBuscaCausa(evento.target.value)}
+          />
+          <select value={filtros.causa} onChange={(evento) => actualizar("causa", evento.target.value)}>
+            <option value="Todas">Todas las causas</option>
+            {causas.map((fila) => (
+              <option key={fila.cod_causa} value={fila.cod_causa}>
+                {fila.causa}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
     </aside>
   );
 }

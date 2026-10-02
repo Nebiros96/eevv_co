@@ -2,18 +2,19 @@ export function literal(valor) {
   return `'${String(valor).replaceAll("'", "''")}'`;
 }
 
-export function whereTerritorio(filtros, { anio = true } = {}) {
+export function whereTerritorio(filtros, { anio = true, tabla = "" } = {}) {
+  const columna = (nombre) => (tabla ? `${tabla}.${nombre}` : nombre);
   const partes = [];
   if (anio && filtros.anio && filtros.anio !== "Todos") {
-    partes.push(`anio = ${Number(filtros.anio)}`);
+    partes.push(`${columna("anio")} = ${Number(filtros.anio)}`);
   }
   if (filtros.departamento && filtros.departamento !== "Todos") {
-    partes.push(`departamento = ${literal(filtros.departamento)}`);
+    partes.push(`${columna("departamento")} = ${literal(filtros.departamento)}`);
   }
   if (filtros.municipio && filtros.municipio !== "Todos") {
     const [codDepartamento, codMunicipio] = filtros.municipio.split("|");
-    partes.push(`cod_departamento = ${literal(codDepartamento)}`);
-    partes.push(`cod_municipio = ${literal(codMunicipio)}`);
+    partes.push(`${columna("cod_departamento")} = ${literal(codDepartamento)}`);
+    partes.push(`${columna("cod_municipio")} = ${literal(codMunicipio)}`);
   }
   return partes.length ? partes.join(" AND ") : "TRUE";
 }
@@ -28,12 +29,11 @@ export async function cargarCatalogos(consultar) {
   const [anios, departamentos, municipios, causas] = await Promise.all([
     consultar("SELECT DISTINCT anio FROM panorama ORDER BY anio DESC"),
     consultar(
-      "SELECT DISTINCT departamento FROM panorama WHERE departamento <> '' ORDER BY departamento",
+      "SELECT DISTINCT departamento FROM geografia WHERE departamento <> '' ORDER BY departamento",
     ),
     consultar(`
       SELECT cod_departamento, departamento, cod_municipio, municipio
-      FROM panorama
-      GROUP BY 1, 2, 3, 4
+      FROM geografia
     `),
     consultar(`
       SELECT cod_causa, MAX(causa) AS causa
