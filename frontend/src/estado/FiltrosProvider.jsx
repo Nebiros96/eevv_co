@@ -30,6 +30,14 @@ export function FiltrosProvider({ children }) {
           return siguiente;
         });
       },
+      reiniciar() {
+        setFiltros((actual) => ({
+          ...actual,
+          departamento: "Todos",
+          municipio: "Todos",
+          causa: "Todas",
+        }));
+      },
     }),
     [filtros],
   );

@@ -19,7 +19,7 @@ export function TerritoriosCausa() {
   `);
 
   return (
-    <Tarjeta titulo="Dónde se concentra" cargando={cargando} error={error} alto={400}>
+    <Tarjeta titulo="Defunciones por entidad territorial" cargando={cargando} error={error} alto={400}>
       {filas.length === 0 ? (
         <Vacio>No hay territorios para esta causa.</Vacio>
       ) : (

@@ -1,104 +1,120 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
+import { Buscador } from "@/componentes/Buscador";
+import { whereTerritorio } from "@/datos/consultas";
+import { useConsulta } from "@/datos/useConsulta";
 import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
 
 export function BarraLateral({ pagina }) {
   const { catalogos } = useDatos();
-  const { filtros, actualizar } = useFiltros();
-  const [buscaMunicipio, setBuscaMunicipio] = useState("");
-  const [buscaCausa, setBuscaCausa] = useState("");
+  const { filtros, actualizar, reiniciar } = useFiltros();
+  const consultaCausas =
+    pagina === "defunciones"
+      ? `
+        SELECT cod_causa, MAX(causa) AS causa
+        FROM causas
+        WHERE ${whereTerritorio(filtros)}
+        GROUP BY cod_causa
+        HAVING SUM(defunciones) > 0
+        ORDER BY SUM(defunciones) DESC
+      `
+      : "";
+  const { filas: causasDisponibles, cargando: cargandoCausas, error: errorCausas } =
+    useConsulta(consultaCausas);
 
-  const municipios = useMemo(() => {
-    const texto = buscaMunicipio.trim().toLocaleLowerCase("es");
-    return catalogos.municipios.filter((fila) => {
-      const mismoDepartamento =
-        filtros.departamento === "Todos" || fila.departamento === filtros.departamento;
-      if (!mismoDepartamento) return false;
-      if (!texto) return true;
-      const etiqueta = `${fila.municipio} ${fila.departamento}`.toLocaleLowerCase("es");
-      return etiqueta.includes(texto);
-    });
-  }, [buscaMunicipio, catalogos.municipios, filtros.departamento]);
+  const anios = useMemo(
+    () => catalogos.anios.map((anio) => ({ valor: String(anio), etiqueta: String(anio) })),
+    [catalogos.anios],
+  );
 
-  const causas = useMemo(() => {
-    const texto = buscaCausa.trim().toLocaleLowerCase("es");
-    if (!texto) return catalogos.causas;
-    return catalogos.causas.filter((fila) => fila.causa.toLocaleLowerCase("es").includes(texto));
-  }, [buscaCausa, catalogos.causas]);
+  const departamentos = useMemo(
+    () => catalogos.departamentos.map((nombre) => ({ valor: nombre, etiqueta: nombre })),
+    [catalogos.departamentos],
+  );
+
+  const municipios = useMemo(
+    () =>
+      catalogos.municipios
+        .filter(
+          (fila) => filtros.departamento === "Todos" || fila.departamento === filtros.departamento,
+        )
+        .map((fila) => ({
+          valor: `${fila.cod_departamento}|${fila.cod_municipio}`,
+          etiqueta:
+            filtros.departamento === "Todos"
+              ? `${fila.municipio} · ${fila.departamento}`
+              : fila.municipio,
+        })),
+    [catalogos.municipios, filtros.departamento],
+  );
+
+  const causas = useMemo(
+    () =>
+      causasDisponibles.map((fila) => ({
+        valor: String(fila.cod_causa),
+        etiqueta: String(fila.causa),
+      })),
+    [causasDisponibles],
+  );
+
+  useEffect(() => {
+    if (pagina !== "defunciones" || cargandoCausas || errorCausas) return;
+    if (filtros.causa === "Todas") return;
+    const sigue = causasDisponibles.some((fila) => String(fila.cod_causa) === filtros.causa);
+    if (!sigue) actualizar("causa", "Todas");
+  }, [actualizar, cargandoCausas, causasDisponibles, errorCausas, filtros.causa, pagina]);
+
+  const hayFiltros =
+    filtros.departamento !== "Todos" || filtros.municipio !== "Todos" || filtros.causa !== "Todas";
 
   return (
     <aside className="barra">
       <p className="nota">
-        Territorio de residencia. Las series anuales conservan todos los años del territorio.
+        Para información más detallada, puede usar los filtros de abajo:
       </p>
-      <label>
-        Año
-        <select value={filtros.anio} onChange={(evento) => actualizar("anio", evento.target.value)}>
-          <option value="Todos">Todos</option>
-          {catalogos.anios.map((anio) => (
-            <option key={anio} value={String(anio)}>
-              {anio}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Departamento
-        <select
-          value={filtros.departamento}
-          onChange={(evento) => actualizar("departamento", evento.target.value)}
-        >
-          <option value="Todos">Todos</option>
-          {catalogos.departamentos.map((nombre) => (
-            <option key={nombre} value={nombre}>
-              {nombre}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Municipio
-        <input
-          value={buscaMunicipio}
-          placeholder="Buscar municipio"
-          onChange={(evento) => setBuscaMunicipio(evento.target.value)}
-        />
-        <select
-          value={filtros.municipio}
-          onChange={(evento) => actualizar("municipio", evento.target.value)}
-        >
-          <option value="Todos">Todos</option>
-          {municipios.map((fila) => {
-            const clave = `${fila.cod_departamento}|${fila.cod_municipio}`;
-            const etiqueta =
-              filtros.departamento === "Todos"
-                ? `${fila.municipio} · ${fila.departamento}`
-                : fila.municipio;
-            return (
-              <option key={clave} value={clave}>
-                {etiqueta}
-              </option>
-            );
-          })}
-        </select>
-      </label>
+      <Buscador
+        etiqueta="Año"
+        buscar={false}
+        valor={String(filtros.anio)}
+        vacioValor="Todos"
+        vacioEtiqueta="Todos"
+        opciones={anios}
+        alElegir={(siguiente) => actualizar("anio", siguiente)}
+      />
+      <Buscador
+        etiqueta="Departamento"
+        valor={filtros.departamento}
+        vacioValor="Todos"
+        vacioEtiqueta="Todos"
+        opciones={departamentos}
+        alElegir={(siguiente) => actualizar("departamento", siguiente)}
+      />
+      <Buscador
+        etiqueta="Municipio"
+        valor={filtros.municipio}
+        vacioValor="Todos"
+        vacioEtiqueta="Todos"
+        opciones={municipios}
+        alElegir={(siguiente) => actualizar("municipio", siguiente)}
+      />
       {pagina === "defunciones" ? (
-        <label>
-          Causa de defunción
-          <input
-            value={buscaCausa}
-            placeholder="Buscar causa"
-            onChange={(evento) => setBuscaCausa(evento.target.value)}
-          />
-          <select value={filtros.causa} onChange={(evento) => actualizar("causa", evento.target.value)}>
-            <option value="Todas">Todas las causas</option>
-            {causas.map((fila) => (
-              <option key={fila.cod_causa} value={fila.cod_causa}>
-                {fila.causa}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Buscador
+          etiqueta="Causa de defunción"
+          valor={filtros.causa}
+          vacioValor="Todas"
+          vacioEtiqueta="Todas las causas"
+          opciones={causas}
+          alElegir={(siguiente) => actualizar("causa", siguiente)}
+        />
+      ) : null}
+      {hayFiltros ? (
+        <button type="button" className="reiniciar" title="Reiniciar filtros" onClick={reiniciar}>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+            <path d="M21 3v6h-6" />
+          </svg>
+          <span className="solo-lectura">Reiniciar filtros</span>
+        </button>
       ) : null}
     </aside>
   );

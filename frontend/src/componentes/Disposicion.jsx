@@ -15,7 +15,7 @@ export function Disposicion() {
     <div className="app">
       <header className="encabezado">
         <div>
-          <h1>Estadísticas vitales nacimientos y defunciones</h1>
+          <h1>Estadísticas vitales: nacimientos y defunciones</h1>
           <p>Nacimientos y defunciones en Colombia registradas por el Departamento Administrativo Nacional de Estadística (DANE)</p>
         </div>
         <nav>

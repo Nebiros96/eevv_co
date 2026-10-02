@@ -26,7 +26,7 @@ export function whereCausas(filtros, opciones = {}) {
 }
 
 export async function cargarCatalogos(consultar) {
-  const [anios, departamentos, municipios, causas] = await Promise.all([
+  const [anios, departamentos, municipios] = await Promise.all([
     consultar("SELECT DISTINCT anio FROM panorama ORDER BY anio DESC"),
     consultar(
       "SELECT DISTINCT departamento FROM geografia WHERE departamento <> '' ORDER BY departamento",
@@ -34,12 +34,6 @@ export async function cargarCatalogos(consultar) {
     consultar(`
       SELECT cod_departamento, departamento, cod_municipio, municipio
       FROM geografia
-    `),
-    consultar(`
-      SELECT cod_causa, MAX(causa) AS causa
-      FROM causas
-      GROUP BY cod_causa
-      ORDER BY SUM(defunciones) DESC
     `),
   ]);
 
@@ -49,6 +43,5 @@ export async function cargarCatalogos(consultar) {
       .map((fila) => fila.departamento)
       .sort((a, b) => a.localeCompare(b, "es")),
     municipios: municipios.sort((a, b) => a.municipio.localeCompare(b.municipio, "es")),
-    causas,
   };
 }

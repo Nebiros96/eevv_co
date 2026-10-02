@@ -73,7 +73,8 @@ button, select, input { font: inherit; }
 }
 
 .barra select,
-.barra input {
+.barra input,
+.barra .buscador-disparador {
   width: 100%;
   padding: 0.45rem 0.55rem;
   border: 1px solid #cbd5e1;
@@ -82,10 +83,101 @@ button, select, input { font: inherit; }
   font-weight: 450;
 }
 
+.buscador-disparador {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+}
+
+.buscador-disparador::after {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 2px solid #64748b;
+  border-bottom: 2px solid #64748b;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.barra .campo {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.buscador { position: relative; }
+
+.buscador-lista {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  max-height: 220px;
+  overflow: auto;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 12%);
+}
+
+.buscador-lista button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 6px;
+  padding: 0.35rem 0.45rem;
+  background: transparent;
+  font-weight: 450;
+  cursor: pointer;
+}
+
+.buscador-lista button.activo,
+.buscador-lista button:hover { background: #e0f2f1; }
+
+.buscador-lista button[aria-selected="true"] { color: #0f766e; }
+
+.buscador-vacio {
+  padding: 0.4rem 0.45rem;
+  color: #64748b;
+  font-weight: 450;
+}
+
 .nota {
   margin: 0;
   color: #64748b;
   font-size: 0.82rem;
+}
+.reiniciar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-top: 0.65rem;
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f766e;
+  cursor: pointer;
+}
+.reiniciar:hover { background: #e0f2f1; }
+.reiniciar svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .contenido {
@@ -110,6 +202,56 @@ button, select, input { font: inherit; }
 
 .indicador span { display: block; font-size: 0.82rem; opacity: 0.92; }
 .indicador strong { display: block; margin-top: 0.35rem; font-size: 1.45rem; }
+.indicador-causa strong {
+  font-size: var(--medida-causa, 1.05rem);
+  line-height: 1.28;
+  text-wrap: balance;
+}
+.indicador-comparativa {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.indicador-comparativa > span { flex: none; margin: 0; }
+.indicador-comparativa strong {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 0.35rem 0.7rem;
+  margin-top: 0;
+  min-width: 0;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.indicador-comparativa strong .lado-sexo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  position: relative;
+  font-size: inherit;
+  opacity: 1;
+  white-space: nowrap;
+}
+.indicador-comparativa .icono-sexo {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex: none;
+  opacity: 1;
+  background: transparent;
+}
+.solo-lectura {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 .tono-nacimientos { background: #0f766e; }
 .tono-defunciones { background: #be123c; }

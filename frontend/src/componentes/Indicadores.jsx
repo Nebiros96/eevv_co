@@ -1,6 +1,6 @@
-export function Indicador({ titulo, valor, tono }) {
+export function Indicador({ titulo, valor, tono, clase = "", estilo }) {
   return (
-    <article className={`indicador tono-${tono}`}>
+    <article className={`indicador tono-${tono} ${clase}`.trim()} style={estilo}>
       <span>{titulo}</span>
       <strong>{valor}</strong>
     </article>

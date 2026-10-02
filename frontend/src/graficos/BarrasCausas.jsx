@@ -33,7 +33,7 @@ export function BarrasCausas() {
   `);
 
   return (
-    <Tarjeta titulo="Principales causas" cargando={cargando} error={error} alto={460}>
+    <Tarjeta titulo="Principales causas de defunción" cargando={cargando} error={error} alto={460}>
       {filas.length === 0 ? (
         <Vacio>No hay causas para este filtro.</Vacio>
       ) : (

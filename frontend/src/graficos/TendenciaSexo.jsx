@@ -40,7 +40,7 @@ export function TendenciaSexo() {
   const datos = [...porAnio.values()];
 
   return (
-    <Tarjeta titulo="Defunciones por sexo, todos los años" cargando={cargando} error={error}>
+    <Tarjeta titulo="Defunciones por sexo y año" cargando={cargando} error={error}>
       {datos.length === 0 ? (
         <Vacio>No hay serie para esta causa.</Vacio>
       ) : (
