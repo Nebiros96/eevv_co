@@ -3,17 +3,15 @@ config.yml
 .env
 .env.*
 
-# Quarto
-.quarto/
-*_cache/
-*_files/
-*_freeze/
-
 # Python
 __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
 
 # R
 .Rhistory

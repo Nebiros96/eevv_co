@@ -1,0 +1,74 @@
+const ARCHIVOS = ["panorama.parquet", "causas.parquet", "geografia.parquet"];
+
+let inicio;
+
+export function obtenerBase() {
+  if (!inicio) inicio = iniciar();
+  return inicio;
+}
+
+async function iniciar() {
+  const duckdb = await import("@duckdb/duckdb-wasm");
+  const bundle = await duckdb.selectBundle(paquetes());
+  const worker = await duckdb.createWorker(bundle.mainWorker);
+  const db = new duckdb.AsyncDuckDB(new duckdb.VoidLogger(), worker);
+  await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+
+  for (const nombre of ARCHIVOS) {
+    const respuesta = await fetch(`/datos/${nombre}`);
+    if (!respuesta.ok) {
+      throw new Error(`No se pudo leer /datos/${nombre}`);
+    }
+    const bytes = new Uint8Array(await respuesta.arrayBuffer());
+    await db.registerFileBuffer(nombre, bytes);
+  }
+
+  const conexion = await db.connect();
+  await conexion.query(`
+    CREATE TABLE panorama AS SELECT * FROM read_parquet('panorama.parquet');
+    CREATE TABLE causas AS SELECT * FROM read_parquet('causas.parquet');
+    CREATE TABLE geografia AS SELECT * FROM read_parquet('geografia.parquet');
+  `);
+
+  let cola = Promise.resolve();
+  const consultar = (sql) => {
+    const tarea = cola.then(async () => filasDe(await conexion.query(sql)));
+    cola = tarea.then(
+      () => undefined,
+      () => undefined,
+    );
+    return tarea;
+  };
+
+  return { consultar };
+}
+
+function paquetes() {
+  return {
+    mvp: {
+      mainModule: new URL("@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm", import.meta.url).href,
+      mainWorker: new URL(
+        "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js",
+        import.meta.url,
+      ).href,
+    },
+    eh: {
+      mainModule: new URL("@duckdb/duckdb-wasm/dist/duckdb-eh.wasm", import.meta.url).href,
+      mainWorker: new URL(
+        "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js",
+        import.meta.url,
+      ).href,
+    },
+  };
+}
+
+function filasDe(tabla) {
+  return tabla.toArray().map((fila) => {
+    const objeto = fila.toJSON();
+    for (const [clave, valor] of Object.entries(objeto)) {
+      if (typeof valor === "bigint") objeto[clave] = Number(valor);
+      if (clave === "anio") objeto[clave] = Number(objeto[clave]);
+    }
+    return objeto;
+  });
+}
