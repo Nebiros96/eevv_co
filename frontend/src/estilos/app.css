@@ -200,8 +200,28 @@ button, select, input { font: inherit; }
   min-height: 92px;
 }
 
-.indicador span { display: block; font-size: 0.82rem; opacity: 0.92; }
+.indicador > span { display: block; font-size: 0.82rem; opacity: 0.92; }
 .indicador strong { display: block; margin-top: 0.35rem; font-size: 1.45rem; }
+.indicador .valor-indicador {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.45rem;
+  font-size: inherit;
+  opacity: 1;
+}
+.indicador .valor-indicador .cifra {
+  display: inline;
+  font-size: inherit;
+  line-height: 1.1;
+  opacity: 1;
+}
+.indicador .variacion {
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1;
+  opacity: 0.9;
+}
 .indicador-causa strong {
   font-size: var(--medida-causa, 1.05rem);
   line-height: 1.28;
@@ -297,10 +317,29 @@ button, select, input { font: inherit; }
   font-size: 0.75rem;
 }
 .leyenda-barra {
-  width: 7.5rem;
+  width: 4.25rem;
   height: 0.55rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, #9f1239, #f8fafc 50%, #0f766e);
+  background: linear-gradient(90deg, #0f766e, #f8fafc);
+}
+.leyenda-barra-alta {
+  background: linear-gradient(90deg, #f8fafc, #9f1239);
+}
+.etiqueta-mapa {
+  background: transparent;
+  border: 0;
+  color: #0f172a;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  text-shadow:
+    0 0 2px #fff,
+    1px 0 0 #fff,
+    -1px 0 0 #fff,
+    0 1px 0 #fff,
+    0 -1px 0 #fff;
+  pointer-events: none;
 }
 
 @media (max-width: 1100px) {

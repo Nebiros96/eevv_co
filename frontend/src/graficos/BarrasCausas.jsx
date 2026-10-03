@@ -1,9 +1,10 @@
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Tarjeta, Vacio } from "@/componentes/Tarjeta";
 import { literal, whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { COLORES, corto, entero } from "@/estilos/tema";
+import { crearEtiquetas } from "@/graficos/etiquetas";
 
 export function BarrasCausas() {
   const { filtros } = useFiltros();
@@ -32,14 +33,16 @@ export function BarrasCausas() {
     ORDER BY defunciones DESC
   `);
 
+  const etiquetas = crearEtiquetas();
+
   return (
     <Tarjeta titulo="Principales causas de defunción" cargando={cargando} error={error} alto={460}>
       {filas.length === 0 ? (
         <Vacio>No hay causas para este filtro.</Vacio>
       ) : (
         <ResponsiveContainer width="100%" height={440}>
-          <BarChart data={filas} layout="vertical" margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
-            <XAxis type="number" tickFormatter={entero} />
+          <BarChart data={filas} layout="vertical" margin={{ top: 8, right: 78, left: 8, bottom: 0 }}>
+            <XAxis type="number" tickFormatter={entero} tick={{ fontSize: 11 }} />
             <YAxis
               type="category"
               dataKey="causa"
@@ -49,6 +52,7 @@ export function BarrasCausas() {
             />
             <Tooltip formatter={entero} />
             <Bar dataKey="defunciones" name="Defunciones" isAnimationActive={false}>
+              <LabelList dataKey="defunciones" content={etiquetas.derecha} />
               {filas.map((fila) => (
                 <Cell
                   key={fila.cod_causa}

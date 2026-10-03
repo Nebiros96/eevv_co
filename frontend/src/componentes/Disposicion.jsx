@@ -16,7 +16,7 @@ export function Disposicion() {
       <header className="encabezado">
         <div>
           <h1>Estadísticas vitales: nacimientos y defunciones</h1>
-          <p>Nacimientos y defunciones en Colombia registradas por el Departamento Administrativo Nacional de Estadística (DANE)</p>
+          <p>Nacimientos y defunciones en Colombia publicadas por el Departamento Administrativo Nacional de Estadística (DANE)</p>
         </div>
         <nav>
           {PAGINAS.map((item) => (

@@ -1,5 +1,6 @@
 import {
   CartesianGrid,
+  LabelList,
   Legend,
   Line,
   LineChart,
@@ -14,6 +15,7 @@ import { useConsulta } from "@/datos/useConsulta";
 import { whereTerritorio } from "@/datos/consultas";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { COLORES, entero } from "@/estilos/tema";
+import { crearEtiquetas } from "@/graficos/etiquetas";
 
 export function SerieAnual() {
   const { filtros } = useFiltros();
@@ -27,16 +29,18 @@ export function SerieAnual() {
     ORDER BY anio
   `);
 
+  const etiquetas = crearEtiquetas();
+
   return (
     <Tarjeta titulo="Nacimientos y defunciones anuales" cargando={cargando} error={error} alto={340}>
       {filas.length === 0 ? (
         <Vacio>No hay hechos vitales para este territorio.</Vacio>
       ) : (
         <ResponsiveContainer width="100%" height={320}>
-          <LineChart data={filas} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <LineChart data={filas} margin={{ top: 22, right: 28, left: 0, bottom: 4 }}>
             <CartesianGrid stroke={COLORES.linea} vertical={false} />
-            <XAxis dataKey="anio" />
-            <YAxis tickFormatter={entero} width={64} />
+            <XAxis dataKey="anio" padding={{ left: 28, right: 20 }} />
+            <YAxis tickFormatter={entero} width={72} tick={{ fontSize: 11 }} domain={[0, (maximo) => maximo * 1.22]} />
             <Tooltip formatter={entero} />
             <Legend />
             <Line
@@ -46,7 +50,9 @@ export function SerieAnual() {
               strokeWidth={2.5}
               dot={{ r: 3 }}
               isAnimationActive={false}
-            />
+            >
+              <LabelList dataKey="nacimientos" content={etiquetas.punto} />
+            </Line>
             <Line
               dataKey="defunciones"
               name="Defunciones"
@@ -54,7 +60,9 @@ export function SerieAnual() {
               strokeWidth={2.5}
               dot={{ r: 3 }}
               isAnimationActive={false}
-            />
+            >
+              <LabelList dataKey="defunciones" content={etiquetas.punto} />
+            </Line>
             {filtros.anio !== "Todos" ? (
               <ReferenceLine x={Number(filtros.anio)} stroke={COLORES.gris} strokeDasharray="4 4" />
             ) : null}
