@@ -2,6 +2,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  LabelList,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -13,6 +14,7 @@ import { whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { COLORES, entero, ORDEN_SEXO } from "@/estilos/tema";
+import { crearEtiquetas } from "@/graficos/etiquetas";
 
 export function ComparacionSexo() {
   const { filtros } = useFiltros();
@@ -32,6 +34,7 @@ export function ComparacionSexo() {
       defunciones: fila?.defunciones ?? 0,
     };
   });
+  const etiquetas = crearEtiquetas();
 
   return (
     <Tarjeta titulo="Comparación entre sexos" cargando={cargando} error={error}>
@@ -39,14 +42,18 @@ export function ComparacionSexo() {
         <Vacio>No hay desagregación por sexo.</Vacio>
       ) : (
         <ResponsiveContainer width="100%" height={320}>
-          <BarChart data={datos} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <BarChart data={datos} margin={{ top: 28, right: 8, left: 0, bottom: 0 }}>
             <CartesianGrid stroke={COLORES.linea} vertical={false} />
             <XAxis dataKey="sexo" />
-            <YAxis tickFormatter={entero} width={64} />
+            <YAxis tickFormatter={entero} width={72} tick={{ fontSize: 11 }} domain={[0, (maximo) => maximo * 1.18]} />
             <Tooltip formatter={entero} />
             <Legend />
-            <Bar dataKey="nacimientos" name="Nacimientos" fill={COLORES.nacimientos} isAnimationActive={false} />
-            <Bar dataKey="defunciones" name="Defunciones" fill={COLORES.defunciones} isAnimationActive={false} />
+            <Bar dataKey="nacimientos" name="Nacimientos" fill={COLORES.nacimientos} isAnimationActive={false}>
+              <LabelList dataKey="nacimientos" content={etiquetas.arriba} />
+            </Bar>
+            <Bar dataKey="defunciones" name="Defunciones" fill={COLORES.defunciones} isAnimationActive={false}>
+              <LabelList dataKey="defunciones" content={etiquetas.arriba} />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       )}

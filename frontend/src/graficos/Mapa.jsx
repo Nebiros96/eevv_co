@@ -6,7 +6,7 @@ import { whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, entero } from "@/estilos/tema";
+import { COLORES, decimal, entero } from "@/estilos/tema";
 
 let geometriaPromesa;
 
@@ -105,13 +105,22 @@ function mezclar(desde, hasta, peso) {
   return `rgb(${canales.join(", ")})`;
 }
 
-function colorDelta(delta, tope) {
-  if (delta == null || !Number.isFinite(delta) || tope <= 0) return "#E2E8F0";
-  if (delta === 0) return "#F8FAFC";
-  const intensidad = 0.28 + 0.72 * Math.sqrt(Math.min(Math.abs(delta) / tope, 1));
-  return delta > 0
-    ? mezclar("#F0FDFA", COLORES.nacimientos, intensidad)
-    : mezclar("#FFF1F2", COLORES.defunciones, intensidad);
+function relacion(fila) {
+  if (!fila || !fila.nacimientos) return null;
+  return (100 * fila.defunciones) / fila.nacimientos;
+}
+
+const BLANCO = "#F8FAFC";
+const TOPE_ROJO = 150;
+
+function colorRelacion(valor) {
+  if (valor == null || !Number.isFinite(valor)) return "#E2E8F0";
+  if (valor <= 100) {
+    const verde = 1 - Math.min(Math.max(valor, 0), 100) / 100;
+    return mezclar(BLANCO, COLORES.nacimientos, verde);
+  }
+  const exceso = Math.min((valor - 100) / (TOPE_ROJO - 100), 1);
+  return mezclar(BLANCO, COLORES.defunciones, Math.sqrt(exceso));
 }
 
 function escapar(texto) {
@@ -123,9 +132,78 @@ function escapar(texto) {
 
 function htmlTooltip(fila) {
   if (!fila) return "Sin registros en el año";
-  const delta = fila.nacimientos - fila.defunciones;
+  const tasa = relacion(fila);
   const lugar = fila.detalle ? `<br/>${escapar(fila.detalle)}` : "";
-  return `<strong>${escapar(fila.nombre)}</strong>${lugar}<br/>Nacimientos: ${entero(fila.nacimientos)}<br/>Defunciones: ${entero(fila.defunciones)}<br/>Diferencia: ${entero(delta)}`;
+  const textoTasa = tasa == null ? "—" : decimal(tasa);
+  return `<strong>${escapar(fila.nombre)}</strong>${lugar}<br/>Nacimientos: ${entero(fila.nacimientos)}<br/>Defunciones: ${entero(fila.defunciones)}<br/>Defunciones por 100 nacimientos: ${textoTasa}`;
+}
+
+function EtiquetasMapa({ coleccion, valores }) {
+  const mapa = useMap();
+
+  useEffect(() => {
+    const marcas = [];
+    const colocar = () => {
+      marcas.forEach((marca) => marca.remove());
+      marcas.length = 0;
+      const candidatos = coleccion.features
+        .map((feature) => {
+          const fila = valores.get(String(feature.properties.codigo));
+          const tasa = relacion(fila);
+          if (tasa == null) return null;
+          const centro = L.geoJSON(feature).getBounds().getCenter();
+          if (!centro) return null;
+          const punto = mapa.latLngToContainerPoint(centro);
+          const texto = decimal(tasa);
+          return {
+            centro,
+            texto,
+            x: punto.x,
+            y: punto.y,
+            peso: fila.nacimientos,
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.peso - a.peso);
+      const ocupadas = [];
+      const tamano = mapa.getSize();
+      for (const item of candidatos) {
+        const ancho = item.texto.length * 6.6 + 8;
+        const alto = 14;
+        if (item.x < ancho / 2 || item.y < 8 || item.x > tamano.x - ancho / 2 || item.y > tamano.y - 8) {
+          continue;
+        }
+        const choca = ocupadas.some(
+          (otra) =>
+            Math.abs(otra.x - item.x) < (otra.ancho + ancho) / 2 + 8 && Math.abs(otra.y - item.y) < 18,
+        );
+        if (choca) continue;
+        ocupadas.push({ x: item.x, y: item.y, ancho });
+        const marca = L.marker(item.centro, {
+          interactive: false,
+          keyboard: false,
+          icon: L.divIcon({
+            className: "etiqueta-mapa",
+            html: item.texto,
+            iconSize: [ancho, alto],
+            iconAnchor: [ancho / 2, alto / 2],
+          }),
+        });
+        marca.addTo(mapa);
+        marcas.push(marca);
+      }
+    };
+    colocar();
+    const marco = requestAnimationFrame(colocar);
+    mapa.on("zoomend", colocar);
+    return () => {
+      cancelAnimationFrame(marco);
+      mapa.off("zoomend", colocar);
+      marcas.forEach((marca) => marca.remove());
+    };
+  }, [coleccion, mapa, valores]);
+
+  return null;
 }
 
 function Ajustar({ coleccion }) {
@@ -160,16 +238,12 @@ export function Mapa() {
     [capas, catalogos.municipios, filtros],
   );
   const valores = useMemo(() => new Map(filas.map((fila) => [String(fila.codigo), fila])), [filas]);
-  const tope = useMemo(
-    () => filas.reduce((mayor, fila) => Math.max(mayor, Math.abs(fila.nacimientos - fila.defunciones)), 0),
-    [filas],
-  );
   const fallo = error || errorMapa;
   const listo = !cargando && Boolean(coleccion) && !fallo;
 
   return (
     <Tarjeta
-      titulo="Diferencia poblacional por territorio de residencia"
+      titulo="Defunciones por 100 nacimientos"
       cargando={!listo && !fallo}
       error={fallo}
       alto={520}
@@ -187,16 +261,16 @@ export function Mapa() {
             className="mapa"
           >
             <Ajustar coleccion={coleccion} />
+            <EtiquetasMapa coleccion={coleccion} valores={valores} />
             <GeoJSON
               key={`${filtros.anio}|${filtros.departamento}|${filtros.municipio}|${coleccion.features.length}`}
               data={coleccion}
               style={(feature) => {
-                const fila = valores.get(feature.properties.codigo);
-                const delta = fila ? fila.nacimientos - fila.defunciones : null;
+                const tasa = relacion(valores.get(String(feature.properties.codigo)));
                 return {
                   color: "#ffffff",
                   weight: 0.8,
-                  fillColor: colorDelta(delta, tope),
+                  fillColor: colorRelacion(tasa),
                   fillOpacity: 1,
                 };
               }}
@@ -206,9 +280,11 @@ export function Mapa() {
             />
           </MapContainer>
           <div className="leyenda">
-            <span>Más defunciones</span>
+            <span>nacimientos > defunciones</span>
             <span className="leyenda-barra" />
-            <span>Más nacimientos</span>
+            <span>100</span>
+            <span className="leyenda-barra leyenda-barra-alta" />
+            <span>defunciones > nacimientos</span>
           </div>
         </div>
       ) : null}

@@ -2,6 +2,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  LabelList,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -13,6 +14,7 @@ import { whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { COLORES, entero } from "@/estilos/tema";
+import { crearEtiquetas } from "@/graficos/etiquetas";
 
 export function Ranking() {
   const { filtros } = useFiltros();
@@ -29,6 +31,7 @@ export function Ranking() {
     LIMIT 10
   `);
   const datos = filas;
+  const etiquetas = crearEtiquetas();
 
   return (
     <Tarjeta titulo="Entidades Territoriales con más defunciones y nacimientos" cargando={cargando} error={error} alto={420}>
@@ -36,14 +39,18 @@ export function Ranking() {
         <Vacio>No hay territorios para este filtro.</Vacio>
       ) : (
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={datos} layout="vertical" margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
+          <BarChart data={datos} layout="vertical" margin={{ top: 8, right: 78, left: 8, bottom: 0 }}>
             <CartesianGrid stroke={COLORES.linea} horizontal={false} />
-            <XAxis type="number" tickFormatter={entero} />
+            <XAxis type="number" tickFormatter={entero} tick={{ fontSize: 11 }} />
             <YAxis type="category" dataKey="etiqueta" width={130} tick={{ fontSize: 12 }} />
             <Tooltip formatter={entero} />
             <Legend />
-            <Bar dataKey="defunciones" name="Defunciones" fill={COLORES.defunciones} isAnimationActive={false} />
-            <Bar dataKey="nacimientos" name="Nacimientos" fill={COLORES.nacimientos} isAnimationActive={false} />
+            <Bar dataKey="defunciones" name="Defunciones" fill={COLORES.defunciones} isAnimationActive={false}>
+              <LabelList dataKey="defunciones" content={etiquetas.derecha} />
+            </Bar>
+            <Bar dataKey="nacimientos" name="Nacimientos" fill={COLORES.nacimientos} isAnimationActive={false}>
+              <LabelList dataKey="nacimientos" content={etiquetas.derecha} />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       )}
