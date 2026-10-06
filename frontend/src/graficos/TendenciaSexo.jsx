@@ -14,7 +14,7 @@ import { Tarjeta, Vacio } from "@/componentes/Tarjeta";
 import { whereCausas } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, entero, ORDEN_SEXO } from "@/estilos/tema";
+import { COLORES, ejeCerrado, entero, marca, ORDEN_SEXO } from "@/estilos/tema";
 import { crearEtiquetas } from "@/graficos/etiquetas";
 
 const TRAZOS = {
@@ -41,6 +41,9 @@ export function TendenciaSexo() {
   }
   const datos = [...porAnio.values()];
   const etiquetas = crearEtiquetas();
+  const eje = ejeCerrado(
+    Math.max(0, ...datos.flatMap((fila) => [fila.Hombres, fila.Mujeres, fila.Indeterminado])),
+  );
 
   return (
     <Tarjeta titulo="Defunciones por sexo y año" cargando={cargando} error={error}>
@@ -51,7 +54,7 @@ export function TendenciaSexo() {
           <LineChart data={datos} margin={{ top: 22, right: 28, left: 0, bottom: 4 }}>
             <CartesianGrid stroke={COLORES.linea} vertical={false} />
             <XAxis dataKey="anio" padding={{ left: 28, right: 20 }} />
-            <YAxis tickFormatter={entero} width={72} tick={{ fontSize: 11 }} domain={[0, (maximo) => maximo * 1.22]} />
+            <YAxis {...eje} tickFormatter={marca} width={72} tick={{ fontSize: 11 }} />
             <Tooltip formatter={entero} />
             <Legend />
             {ORDEN_SEXO.map((sexo) => (

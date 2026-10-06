@@ -3,7 +3,7 @@ import { Tarjeta, Vacio } from "@/componentes/Tarjeta";
 import { literal, whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, corto, entero } from "@/estilos/tema";
+import { COLORES, corto, ejeCerrado, entero, marca } from "@/estilos/tema";
 import { crearEtiquetas } from "@/graficos/etiquetas";
 
 export function BarrasCausas() {
@@ -34,6 +34,7 @@ export function BarrasCausas() {
   `);
 
   const etiquetas = crearEtiquetas();
+  const eje = ejeCerrado(Math.max(0, ...filas.map((fila) => fila.defunciones)));
 
   return (
     <Tarjeta titulo="Principales causas de defunción" cargando={cargando} error={error} alto={460}>
@@ -42,7 +43,7 @@ export function BarrasCausas() {
       ) : (
         <ResponsiveContainer width="100%" height={440}>
           <BarChart data={filas} layout="vertical" margin={{ top: 8, right: 78, left: 8, bottom: 0 }}>
-            <XAxis type="number" tickFormatter={entero} tick={{ fontSize: 11 }} />
+            <XAxis type="number" {...eje} tickFormatter={marca} tick={{ fontSize: 11 }} />
             <YAxis
               type="category"
               dataKey="causa"

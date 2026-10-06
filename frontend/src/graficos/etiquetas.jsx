@@ -24,7 +24,7 @@ function dibujar(x, y, contenido, ancla) {
   );
 }
 
-export function crearEtiquetas() {
+export function crearEtiquetas({ formato = entero } = {}) {
   const puestas = [];
   const decisiones = new Map();
 
@@ -51,7 +51,7 @@ export function crearEtiquetas() {
     punto({ x, y, value, index }) {
       if (!Number.isFinite(Number(value))) return null;
       return unaVez(`p|${index}|${value}|${Math.round(x)}|${Math.round(y)}`, () => {
-        const contenido = entero(value);
+        const contenido = formato(value);
         const ancho = anchoDe(contenido);
         for (const py of [y - 12, y + 14, y - 26, y + 28, y - 40]) {
           if (tomar(x, py, ancho)) return dibujar(x, py, contenido, "middle");

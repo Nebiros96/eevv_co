@@ -4,6 +4,7 @@ import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal, entero } from "@/estilos/tema";
 import { ComparacionSexo } from "@/graficos/ComparacionSexo";
+import { EvolucionRelacion } from "@/graficos/EvolucionRelacion";
 import { Mapa } from "@/graficos/Mapa";
 import { Ranking } from "@/graficos/Ranking";
 import { SerieAnual } from "@/graficos/SerieAnual";
@@ -94,7 +95,10 @@ export function Panorama() {
         <Ranking />
         <ComparacionSexo />
       </div>
-      <Mapa />
+      <div className="rejilla">
+        <Mapa />
+        <EvolucionRelacion />
+      </div>
     </>
   );
 }
