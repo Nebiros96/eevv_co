@@ -280,11 +280,11 @@ export function Mapa() {
             />
           </MapContainer>
           <div className="leyenda">
-            <span>nacimientos > defunciones</span>
+            <span>nacimientos {'>'} defunciones</span>
             <span className="leyenda-barra" />
             <span>100</span>
             <span className="leyenda-barra leyenda-barra-alta" />
-            <span>defunciones > nacimientos</span>
+            <span>defunciones {'>'} nacimientos</span>
           </div>
         </div>
       ) : null}

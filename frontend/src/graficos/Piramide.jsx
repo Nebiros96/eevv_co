@@ -3,7 +3,7 @@ import { Tarjeta, Vacio } from "@/componentes/Tarjeta";
 import { whereCausas } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, entero, ORDEN_EDAD } from "@/estilos/tema";
+import { COLORES, ejeSimetrico, entero, marca, ORDEN_EDAD } from "@/estilos/tema";
 import { crearEtiquetas } from "@/graficos/etiquetas";
 
 export function Piramide() {
@@ -27,6 +27,7 @@ export function Piramide() {
     };
   }).filter((fila) => fila.Hombres !== 0 || fila.Mujeres !== 0);
   const etiquetas = crearEtiquetas();
+  const eje = ejeSimetrico(Math.max(0, ...datos.flatMap((fila) => [Math.abs(fila.Hombres), fila.Mujeres])));
 
   return (
     <Tarjeta titulo="Edad y sexo" cargando={cargando} error={error} alto={460}>
@@ -35,7 +36,7 @@ export function Piramide() {
       ) : (
         <ResponsiveContainer width="100%" height={440}>
           <BarChart data={datos} layout="vertical" stackOffset="sign" margin={{ top: 8, right: 72, left: 8, bottom: 0 }}>
-            <XAxis type="number" tickFormatter={(valor) => entero(Math.abs(valor))} tick={{ fontSize: 11 }} />
+            <XAxis type="number" {...eje} tickFormatter={(valor) => marca(Math.abs(valor))} tick={{ fontSize: 11 }} />
             <YAxis type="category" dataKey="edad" width={110} tick={{ fontSize: 12 }} />
             <Tooltip formatter={(valor) => entero(Math.abs(valor))} />
             <Legend />

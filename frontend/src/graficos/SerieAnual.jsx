@@ -14,7 +14,7 @@ import { Tarjeta, Vacio } from "@/componentes/Tarjeta";
 import { useConsulta } from "@/datos/useConsulta";
 import { whereTerritorio } from "@/datos/consultas";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, entero } from "@/estilos/tema";
+import { COLORES, ejeCerrado, entero, marca } from "@/estilos/tema";
 import { crearEtiquetas } from "@/graficos/etiquetas";
 
 export function SerieAnual() {
@@ -30,6 +30,7 @@ export function SerieAnual() {
   `);
 
   const etiquetas = crearEtiquetas();
+  const eje = ejeCerrado(Math.max(0, ...filas.flatMap((fila) => [fila.nacimientos, fila.defunciones])));
 
   return (
     <Tarjeta titulo="Nacimientos y defunciones anuales" cargando={cargando} error={error} alto={340}>
@@ -40,7 +41,7 @@ export function SerieAnual() {
           <LineChart data={filas} margin={{ top: 22, right: 28, left: 0, bottom: 4 }}>
             <CartesianGrid stroke={COLORES.linea} vertical={false} />
             <XAxis dataKey="anio" padding={{ left: 28, right: 20 }} />
-            <YAxis tickFormatter={entero} width={72} tick={{ fontSize: 11 }} domain={[0, (maximo) => maximo * 1.22]} />
+            <YAxis {...eje} tickFormatter={marca} width={72} tick={{ fontSize: 11 }} />
             <Tooltip formatter={entero} />
             <Legend />
             <Line

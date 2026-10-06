@@ -13,7 +13,7 @@ import { Tarjeta, Vacio } from "@/componentes/Tarjeta";
 import { whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, entero, ORDEN_SEXO } from "@/estilos/tema";
+import { COLORES, ejeCerrado, entero, marca, ORDEN_SEXO } from "@/estilos/tema";
 import { crearEtiquetas } from "@/graficos/etiquetas";
 
 export function ComparacionSexo() {
@@ -35,17 +35,18 @@ export function ComparacionSexo() {
     };
   });
   const etiquetas = crearEtiquetas();
+  const eje = ejeCerrado(Math.max(0, ...datos.flatMap((fila) => [fila.nacimientos, fila.defunciones])));
 
   return (
-    <Tarjeta titulo="Comparación entre sexos" cargando={cargando} error={error}>
+    <Tarjeta titulo="Comparación entre sexos" cargando={cargando} error={error} alto={420}>
       {datos.length === 0 ? (
         <Vacio>No hay desagregación por sexo.</Vacio>
       ) : (
-        <ResponsiveContainer width="100%" height={320}>
+        <ResponsiveContainer width="100%" height={400}>
           <BarChart data={datos} margin={{ top: 28, right: 8, left: 0, bottom: 0 }}>
             <CartesianGrid stroke={COLORES.linea} vertical={false} />
             <XAxis dataKey="sexo" />
-            <YAxis tickFormatter={entero} width={72} tick={{ fontSize: 11 }} domain={[0, (maximo) => maximo * 1.18]} />
+            <YAxis {...eje} tickFormatter={marca} width={72} tick={{ fontSize: 11 }} />
             <Tooltip formatter={entero} />
             <Legend />
             <Bar dataKey="nacimientos" name="Nacimientos" fill={COLORES.nacimientos} isAnimationActive={false}>
