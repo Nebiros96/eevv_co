@@ -27,7 +27,8 @@ export function TerritoriosCausa() {
       {filas.length === 0 ? (
         <Vacio>No hay territorios para esta causa.</Vacio>
       ) : (
-        <ResponsiveContainer width="100%" height={380}>
+        <div className="grafica-caja" style={{ minHeight: 360 }}>
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={filas}
             layout="vertical"
@@ -41,6 +42,7 @@ export function TerritoriosCausa() {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+        </div>
       )}
     </Tarjeta>
   );

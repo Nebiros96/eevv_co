@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 
+import analisis
 import db
 
 SALIDA = Path(__file__).resolve().parent / "datos"
@@ -36,6 +37,15 @@ def geografia(municipios: pd.DataFrame, coords: pd.DataFrame) -> pd.DataFrame:
     return tabla.sort_values(["cod_departamento", "cod_municipio"]).reset_index(drop=True)
 
 
+def recorte(tabla: pd.DataFrame, enteros: tuple[str, ...] = ()) -> pd.DataFrame:
+    salida = tabla.copy()
+    if "anio" in salida.columns:
+        salida["anio"] = salida["anio"].astype("int16")
+    for columna in enteros:
+        salida[columna] = salida[columna].astype("int64")
+    return salida.reset_index(drop=True)
+
+
 def causas(tabla: pd.DataFrame) -> pd.DataFrame:
     columnas = [
         *LLAVES[:5],
@@ -62,10 +72,17 @@ def escribir(tabla: pd.DataFrame, nombre: str) -> Path:
 def main() -> None:
     SALIDA.mkdir(exist_ok=True)
     tablero = db.cargar_tablero()
+    extra = analisis.cargar_analisis()
     archivos = {
         "panorama.parquet": panorama(tablero["nacimientos"], tablero["defunciones"]),
         "causas.parquet": causas(tablero["causas"]),
         "geografia.parquet": geografia(tablero["municipios"], tablero["coords"]),
+        "poblacion.parquet": recorte(extra["poblacion"], ("poblacion",)),
+        "poblacion_area.parquet": recorte(extra["poblacion_area"], ("poblacion",)),
+        "nac_edad.parquet": recorte(extra["nac_edad"], ("nacimientos",)),
+        "nac_perfil.parquet": recorte(extra["nac_perfil"], ("nacimientos",)),
+        "def_edad.parquet": recorte(extra["def_edad"], ("defunciones",)),
+        "externas.parquet": recorte(extra["externas"], ("defunciones",)),
     }
     for nombre, tabla in archivos.items():
         ruta = escribir(tabla, nombre)

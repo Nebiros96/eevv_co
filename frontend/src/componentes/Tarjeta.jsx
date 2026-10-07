@@ -2,7 +2,7 @@ export function Tarjeta({ titulo, children, cargando, error, alto = 360 }) {
   return (
     <section className="tarjeta">
       <h2>{titulo}</h2>
-      <div className="tarjeta-cuerpo" style={{ minHeight: alto }}>
+      <div className="tarjeta-cuerpo" style={{ minHeight: alto, flex: 1 }}>
         {cargando ? <p className="aviso">Cargando…</p> : null}
         {!cargando && error ? <p className="aviso error">{error}</p> : null}
         {!cargando && !error ? children : null}

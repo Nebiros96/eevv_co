@@ -1,38 +1,101 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BarraLateral } from "@/componentes/BarraLateral";
+import { CaidaNatalidad } from "@/paginas/CaidaNatalidad";
+import { CausasExternas } from "@/paginas/CausasExternas";
 import { Defunciones } from "@/paginas/Defunciones";
+import { Fecundidad } from "@/paginas/Fecundidad";
+import { Mortalidad } from "@/paginas/Mortalidad";
 import { Panorama } from "@/paginas/Panorama";
 
-const PAGINAS = [
+const MENU = [
   { id: "panorama", titulo: "Panorama" },
-  { id: "defunciones", titulo: "Defunciones" },
+  {
+    id: "nacimientos",
+    titulo: "Nacimientos",
+    hijos: [
+      { id: "fecundidad", titulo: "Fecundidad" },
+      { id: "caida", titulo: "Caída de la natalidad" },
+    ],
+  },
+  {
+    id: "defunciones",
+    titulo: "Defunciones",
+    hijos: [
+      { id: "causas", titulo: "Causas" },
+      { id: "mortalidad", titulo: "Mortalidad" },
+      { id: "externas", titulo: "Causas externas" },
+    ],
+  },
 ];
+
+const PAGINAS = {
+  panorama: Panorama,
+  fecundidad: Fecundidad,
+  caida: CaidaNatalidad,
+  causas: Defunciones,
+  mortalidad: Mortalidad,
+  externas: CausasExternas,
+};
+
+function seccionDe(pagina) {
+  return MENU.find((item) => item.id === pagina || item.hijos?.some((hijo) => hijo.id === pagina));
+}
 
 export function Disposicion() {
   const [pagina, setPagina] = useState("panorama");
+  const seccion = useMemo(() => seccionDe(pagina), [pagina]);
+  const Vista = PAGINAS[pagina] ?? Panorama;
+
+  function irSeccion(item) {
+    if (!item.hijos) {
+      setPagina(item.id);
+      return;
+    }
+    if (item.hijos.some((hijo) => hijo.id === pagina)) return;
+    setPagina(item.hijos[0].id);
+  }
 
   return (
     <div className="app">
       <header className="encabezado">
         <div>
           <h1>Estadísticas vitales: nacimientos y defunciones</h1>
-          <p>Nacimientos y defunciones en Colombia publicadas por el Departamento Administrativo Nacional de Estadística (DANE)</p>
+          <p>
+            Nacimientos y defunciones en Colombia publicadas por el Departamento Administrativo Nacional
+            de Estadística (DANE)
+          </p>
         </div>
-        <nav>
-          {PAGINAS.map((item) => (
+        <nav className="menu">
+          {MENU.map((item) => (
             <button
               key={item.id}
               type="button"
-              className={pagina === item.id ? "activo" : ""}
-              onClick={() => setPagina(item.id)}
+              className={seccion?.id === item.id ? "activo" : ""}
+              onClick={() => irSeccion(item)}
             >
               {item.titulo}
             </button>
           ))}
         </nav>
       </header>
+      {seccion?.hijos ? (
+        <div className="subnav">
+          {seccion.hijos.map((hijo) => (
+            <button
+              key={hijo.id}
+              type="button"
+              className={pagina === hijo.id ? "activo" : ""}
+              onClick={() => setPagina(hijo.id)}
+            >
+              {hijo.titulo}
+            </button>
+          ))}
+        </div>
+      ) : null}
       <BarraLateral pagina={pagina} />
-      <main className="contenido">{pagina === "panorama" ? <Panorama /> : <Defunciones />}</main>
+      <main className="contenido">
+        <Vista />
+      </main>
     </div>
   );
 }

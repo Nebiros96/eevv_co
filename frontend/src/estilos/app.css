@@ -22,8 +22,32 @@ button, select, input { font: inherit; }
 .app {
   display: grid;
   grid-template-columns: 300px 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto auto;
   min-height: 100vh;
+}
+
+.subnav {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.45rem 1.25rem;
+  background: #16365c;
+  border-top: 1px solid rgb(248 250 252 / 12%);
+}
+
+.subnav button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  background: transparent;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.subnav button.activo {
+  background: #ccfbf1;
+  color: #134e4a;
 }
 
 .encabezado {
@@ -45,7 +69,13 @@ button, select, input { font: inherit; }
   font-size: 0.92rem;
 }
 
-.encabezado nav { display: flex; gap: 0.4rem; }
+.encabezado nav,
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
 
 .encabezado button {
   border: 0;
@@ -59,6 +89,9 @@ button, select, input { font: inherit; }
 .encabezado button.activo { background: #f8fafc; color: #0f2744; }
 
 .barra {
+  grid-column: 1;
+  min-height: 0;
+  overflow: auto;
   padding: 1rem;
   background: #fff;
   border-right: 1px solid #e2e8f0;
@@ -181,15 +214,24 @@ button, select, input { font: inherit; }
 }
 
 .contenido {
+  grid-column: 2;
   padding: 1rem;
   display: grid;
   gap: 1rem;
   align-content: start;
+  min-height: 0;
+  overflow: auto;
+}
+
+.intro-pagina {
+  margin: 0;
+  color: #475569;
+  font-size: 0.92rem;
 }
 
 .indicadores {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 0.75rem;
 }
 
@@ -286,6 +328,9 @@ button, select, input { font: inherit; }
 }
 
 .tarjeta {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
@@ -295,6 +340,19 @@ button, select, input { font: inherit; }
 .tarjeta h2 {
   margin: 0 0 0.5rem;
   font-size: 1rem;
+}
+
+.tarjeta-cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.grafica-caja {
+  flex: 1;
+  width: 100%;
+  min-height: 280px;
 }
 
 .aviso { color: #64748b; margin: 1rem 0; }
@@ -345,5 +403,7 @@ button, select, input { font: inherit; }
 @media (max-width: 1100px) {
   .app { grid-template-columns: 1fr; }
   .indicadores, .rejilla { grid-template-columns: 1fr; }
+  .barra,
+  .contenido { grid-column: 1; }
   .barra { border-right: 0; border-bottom: 1px solid #e2e8f0; }
 }

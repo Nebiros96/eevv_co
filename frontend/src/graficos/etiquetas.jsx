@@ -62,7 +62,7 @@ export function crearEtiquetas({ formato = entero } = {}) {
     derecha({ x, y, width, height, value, index }) {
       if (!Number.isFinite(Number(value))) return null;
       return unaVez(`d|${index}|${value}|${Math.round(x)}|${Math.round(width)}`, () => {
-        const contenido = entero(value);
+        const contenido = formato(value);
         const ancho = anchoDe(contenido);
         const px = x + Math.max(width, 0) + 6 + ancho / 2;
         const py = y + height / 2;
@@ -73,7 +73,7 @@ export function crearEtiquetas({ formato = entero } = {}) {
     extremo({ x, y, width, height, value, index }) {
       if (!Number.isFinite(Number(value))) return null;
       return unaVez(`e|${index}|${value}|${Math.round(x)}|${Math.round(width)}`, () => {
-        const contenido = entero(Math.abs(value));
+        const contenido = formato(Math.abs(value));
         const ancho = anchoDe(contenido);
         const negativo = Number(value) < 0 || width < 0;
         const izquierda = width < 0 ? x + width : x;
@@ -110,7 +110,7 @@ export function crearEtiquetas({ formato = entero } = {}) {
     arriba({ x, y, width, value, index }) {
       if (!Number.isFinite(Number(value))) return null;
       return unaVez(`a|${index}|${value}|${Math.round(x)}|${Math.round(y)}`, () => {
-        const contenido = entero(value);
+        const contenido = formato(value);
         const ancho = anchoDe(contenido);
         const cx = x + width / 2;
         for (const py of [y - 10, y - 23, y - 36]) {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Buscador } from "@/componentes/Buscador";
-import { whereTerritorio } from "@/datos/consultas";
+import { CAUSAS_EXTERNAS, whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
@@ -9,7 +9,7 @@ export function BarraLateral({ pagina }) {
   const { catalogos } = useDatos();
   const { filtros, actualizar, reiniciar } = useFiltros();
   const consultaCausas =
-    pagina === "defunciones"
+    pagina === "causas"
       ? `
         SELECT cod_causa, MAX(causa) AS causa
         FROM causas
@@ -58,14 +58,17 @@ export function BarraLateral({ pagina }) {
   );
 
   useEffect(() => {
-    if (pagina !== "defunciones" || cargandoCausas || errorCausas) return;
+    if (pagina !== "causas" || cargandoCausas || errorCausas) return;
     if (filtros.causa === "Todas") return;
     const sigue = causasDisponibles.some((fila) => String(fila.cod_causa) === filtros.causa);
     if (!sigue) actualizar("causa", "Todas");
   }, [actualizar, cargandoCausas, causasDisponibles, errorCausas, filtros.causa, pagina]);
 
   const hayFiltros =
-    filtros.departamento !== "Todos" || filtros.municipio !== "Todos" || filtros.causa !== "Todas";
+    filtros.departamento !== "Todos" ||
+    filtros.municipio !== "Todos" ||
+    filtros.causa !== "Todas" ||
+    filtros.externa !== "Todas";
 
   return (
     <aside className="barra">
@@ -97,7 +100,7 @@ export function BarraLateral({ pagina }) {
         opciones={municipios}
         alElegir={(siguiente) => actualizar("municipio", siguiente)}
       />
-      {pagina === "defunciones" ? (
+      {pagina === "causas" ? (
         <Buscador
           etiqueta="Causa de defunción"
           valor={filtros.causa}
@@ -105,6 +108,17 @@ export function BarraLateral({ pagina }) {
           vacioEtiqueta="Todas las causas"
           opciones={causas}
           alElegir={(siguiente) => actualizar("causa", siguiente)}
+        />
+      ) : null}
+      {pagina === "externas" ? (
+        <Buscador
+          etiqueta="Causa externa"
+          buscar={false}
+          valor={filtros.externa}
+          vacioValor="Todas"
+          vacioEtiqueta="Todas"
+          opciones={CAUSAS_EXTERNAS.map((causa) => ({ valor: causa, etiqueta: causa }))}
+          alElegir={(siguiente) => actualizar("externa", siguiente)}
         />
       ) : null}
       {hayFiltros ? (
