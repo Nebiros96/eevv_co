@@ -38,7 +38,7 @@ export function ComparacionSexo() {
   const eje = ejeCerrado(Math.max(0, ...datos.flatMap((fila) => [fila.nacimientos, fila.defunciones])));
 
   return (
-    <Tarjeta titulo="Comparación entre sexos" cargando={cargando} error={error} alto={420}>
+    <Tarjeta titulo="Nacimientos y defunciones por sexo" cargando={cargando} error={error} alto={420}>
       {datos.length === 0 ? (
         <Vacio>No hay desagregación por sexo.</Vacio>
       ) : (

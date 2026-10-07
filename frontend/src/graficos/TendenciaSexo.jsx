@@ -46,11 +46,12 @@ export function TendenciaSexo() {
   );
 
   return (
-    <Tarjeta titulo="Defunciones por sexo y año" cargando={cargando} error={error}>
+    <Tarjeta titulo="Defunciones por sexo y año" cargando={cargando} error={error} alto={400}>
       {datos.length === 0 ? (
         <Vacio>No hay serie para esta causa.</Vacio>
       ) : (
-        <ResponsiveContainer width="100%" height={340}>
+        <div className="grafica-caja" style={{ minHeight: 360 }}>
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart data={datos} margin={{ top: 22, right: 28, left: 0, bottom: 4 }}>
             <CartesianGrid stroke={COLORES.linea} vertical={false} />
             <XAxis dataKey="anio" padding={{ left: 28, right: 20 }} />
@@ -74,6 +75,7 @@ export function TendenciaSexo() {
             ) : null}
           </LineChart>
         </ResponsiveContainer>
+        </div>
       )}
     </Tarjeta>
   );

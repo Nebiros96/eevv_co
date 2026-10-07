@@ -30,7 +30,7 @@ export function Piramide() {
   const eje = ejeSimetrico(Math.max(0, ...datos.flatMap((fila) => [Math.abs(fila.Hombres), fila.Mujeres])));
 
   return (
-    <Tarjeta titulo="Edad y sexo" cargando={cargando} error={error} alto={460}>
+    <Tarjeta titulo="Defunciones por grupo etario y sexo" cargando={cargando} error={error} alto={460}>
       {datos.length === 0 ? (
         <Vacio>No hay edad y sexo para este filtro.</Vacio>
       ) : (

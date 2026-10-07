@@ -8,6 +8,7 @@ const INICIAL = {
   departamento: "Todos",
   municipio: "Todos",
   causa: "Todas",
+  externa: "Todas",
 };
 
 export function FiltrosProvider({ children }) {
@@ -36,6 +37,7 @@ export function FiltrosProvider({ children }) {
           departamento: "Todos",
           municipio: "Todos",
           causa: "Todas",
+          externa: "Todas",
         }));
       },
     }),

@@ -6,8 +6,9 @@ Sitio publicado: [https://estadisticasvitales.github.io/](https://estadisticasvi
 
 ## Qué muestra
 
-- **Panorama:** nacimientos, defunciones y su relación; mapa departamental o municipal; series y rankings.
-- **Defunciones:** pirámide por edad y sexo, causas principales y comparaciones territoriales.
+- **Panorama:** conteos, tasas brutas por 1.000 habitantes, relación nacimientos-defunciones, mapa y rankings.
+- **Nacimientos:** fecundidad por edad, tasa global, fecundidad adolescente, y la caída desde 2019 por edad de la madre, educación y régimen.
+- **Defunciones:** causas, mortalidad específica y estandarizada, y causas externas por 100.000 con mapa municipal.
 
 Los filtros cubren año, departamento, municipio y causa.
 

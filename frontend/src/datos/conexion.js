@@ -1,4 +1,14 @@
-const ARCHIVOS = ["panorama.parquet", "causas.parquet", "geografia.parquet"];
+const ARCHIVOS = [
+  "panorama.parquet",
+  "causas.parquet",
+  "geografia.parquet",
+  "poblacion.parquet",
+  "poblacion_area.parquet",
+  "nac_edad.parquet",
+  "nac_perfil.parquet",
+  "def_edad.parquet",
+  "externas.parquet",
+];
 
 let inicio;
 
@@ -29,6 +39,12 @@ async function iniciar() {
     CREATE TABLE panorama AS SELECT * FROM read_parquet('panorama.parquet');
     CREATE TABLE causas AS SELECT * FROM read_parquet('causas.parquet');
     CREATE TABLE geografia AS SELECT * FROM read_parquet('geografia.parquet');
+    CREATE TABLE poblacion AS SELECT * FROM read_parquet('poblacion.parquet');
+    CREATE TABLE poblacion_area AS SELECT * FROM read_parquet('poblacion_area.parquet');
+    CREATE TABLE nac_edad AS SELECT * FROM read_parquet('nac_edad.parquet');
+    CREATE TABLE nac_perfil AS SELECT * FROM read_parquet('nac_perfil.parquet');
+    CREATE TABLE def_edad AS SELECT * FROM read_parquet('def_edad.parquet');
+    CREATE TABLE externas AS SELECT * FROM read_parquet('externas.parquet');
   `);
 
   let cola = Promise.resolve();
