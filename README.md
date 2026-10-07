@@ -2,7 +2,7 @@
 
 Dashboard estático de nacimientos y defunciones en Colombia a partir de las estadísticas vitales del DANE. Consulta Parquet en el navegador con DuckDB WASM: no hay backend en producción.
 
-Sitio publicado: [https://nebiros96.github.io/eevv_co/](https://nebiros96.github.io/eevv_co/)
+Sitio publicado: [https://estadisticasvitales.github.io/](https://estadisticasvitales.github.io/)
 
 ## Qué muestra
 
