@@ -46,7 +46,7 @@ function servirDatos() {
 }
 
 export default defineConfig({
-  base: process.env.GITHUB_ACTIONS ? "/eevv_co/" : "/",
+  base: "/",
   plugins: [react(), servirDatos()],
   resolve: {
     alias: {
