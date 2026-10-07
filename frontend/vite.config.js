@@ -32,7 +32,9 @@ function servirDatos() {
       server.middlewares.use("/datos", middleware);
     },
     writeBundle() {
-      const destino = path.resolve(raiz, "dist/datos");
+      const dist = path.resolve(raiz, "dist");
+      fs.writeFileSync(path.join(dist, ".nojekyll"), "");
+      const destino = path.join(dist, "datos");
       fs.mkdirSync(destino, { recursive: true });
       for (const nombre of fs.readdirSync(datos)) {
         if (nombre.endsWith(".parquet")) {
@@ -44,6 +46,7 @@ function servirDatos() {
 }
 
 export default defineConfig({
+  base: process.env.GITHUB_ACTIONS ? "/eevv_co/" : "/",
   plugins: [react(), servirDatos()],
   resolve: {
     alias: {

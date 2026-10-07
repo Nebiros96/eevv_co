@@ -1,0 +1,6 @@
+# Dependencias de Python (db.py y exportar_datos.py).
+# El frontend se instala aparte: cd frontend && npm install
+pandas==2.3.2
+psycopg2-binary==2.9.12
+PyYAML==6.0
+pyarrow==11.0.0
