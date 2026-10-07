@@ -14,7 +14,7 @@ function cargarGeometria() {
   if (!geometriaPromesa) {
     geometriaPromesa = Promise.all(
       ["departamentos", "municipios"].map(async (nombre) => {
-        const respuesta = await fetch(`/mapas/${nombre}.geojson`);
+        const respuesta = await fetch(`${import.meta.env.BASE_URL}mapas/${nombre}.geojson`);
         if (!respuesta.ok) throw new Error(`No se pudo leer el mapa de ${nombre}.`);
         return respuesta.json();
       }),

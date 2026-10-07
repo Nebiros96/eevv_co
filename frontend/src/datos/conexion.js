@@ -12,12 +12,13 @@ async function iniciar() {
   const bundle = await duckdb.selectBundle(paquetes());
   const worker = await duckdb.createWorker(bundle.mainWorker);
   const db = new duckdb.AsyncDuckDB(new duckdb.VoidLogger(), worker);
-  await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+  await db.instantiate(bundle.mainModule);
 
   for (const nombre of ARCHIVOS) {
-    const respuesta = await fetch(`/datos/${nombre}`);
+    const ruta = `${import.meta.env.BASE_URL}datos/${nombre}`;
+    const respuesta = await fetch(ruta);
     if (!respuesta.ok) {
-      throw new Error(`No se pudo leer /datos/${nombre}`);
+      throw new Error(`No se pudo leer ${ruta}`);
     }
     const bytes = new Uint8Array(await respuesta.arrayBuffer());
     await db.registerFileBuffer(nombre, bytes);
