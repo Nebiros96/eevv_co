@@ -39,7 +39,7 @@ export function SerieExterna({ sql }) {
   const eje = ejeCerrado(Math.max(0, ...filas.map((fila) => fila.tasa || 0)));
 
   return (
-    <Tarjeta titulo="Tasas por 100.000 habitantes" cargando={cargando} error={error} alto={360}>
+    <Tarjeta titulo="Tasas de defunciones por causas externas por 100.000 habitantes" cargando={cargando} error={error} alto={360}>
       {datos.length === 0 ? (
         <Vacio>No hay causas externas para este filtro.</Vacio>
       ) : (

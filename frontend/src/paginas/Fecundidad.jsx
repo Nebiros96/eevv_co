@@ -36,7 +36,7 @@ export function Fecundidad() {
         fecundidad suma los grupos de 15 a 49 años.
       </p>
       <FilaIndicadores>
-        <Indicador titulo="Tasa global de fecundidad" valor={tgf ? decimal2(tgf) : "—"} tono="nacimientos" />
+        <Indicador titulo="Tasa global de fecundidad (TGF)" valor={tgf ? decimal2(tgf) : "—"} tono="nacimientos" />
         <Indicador
           titulo="Fecundidad 15-19"
           valor={adoles15 == null ? "—" : decimal(adoles15)}
@@ -48,7 +48,7 @@ export function Fecundidad() {
           tono="diferencia"
         />
         <Indicador
-          titulo="Edad promedio al nacer"
+          titulo="Edad promedio de la madre al dar a luz"
           valor={edadMedia == null ? "—" : decimal(edadMedia)}
           tono="hombres"
         />
@@ -65,7 +65,7 @@ export function Fecundidad() {
         />
       </div>
       <MapaCoropletas
-        titulo="Tasa global de fecundidad"
+        titulo="Tasa global de fecundidad (TGF)"
         sql={sqlMapaTgf(filtros)}
         color={COLORES.mujeres}
         formato={decimal2}

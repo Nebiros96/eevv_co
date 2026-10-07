@@ -17,7 +17,7 @@ export function EdadMadre({ filas, anioBase, anioActual }) {
   const eje = ejeCerrado(Math.max(0, ...datos.flatMap((fila) => [fila[anioBase], fila[anioActual]])));
 
   return (
-    <Tarjeta titulo="Nacimientos según edad de la madre" alto={400}>
+    <Tarjeta titulo="Nacimientos según grupo etario de la madre" alto={400}>
       {datos.length === 0 ? (
         <Vacio>No hay edad de la madre para comparar.</Vacio>
       ) : (

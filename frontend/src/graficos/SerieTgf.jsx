@@ -22,7 +22,7 @@ export function SerieTgf({ sql }) {
   const eje = ejeCerrado(Math.max(0, ...filas.map((fila) => fila.tgf || 0)));
 
   return (
-    <Tarjeta titulo="Tasa global de fecundidad" cargando={cargando} error={error} alto={340}>
+    <Tarjeta titulo="Tasa global de fecundidad (hijos por mujer)" cargando={cargando} error={error} alto={340}>
       {filas.length === 0 ? (
         <Vacio>No hay TGF para este territorio.</Vacio>
       ) : (

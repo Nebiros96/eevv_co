@@ -13,7 +13,7 @@ export function BarrasFecundidad({ sql }) {
   const eje = ejeCerrado(Math.max(0, ...datos.map((fila) => fila.tasa || 0)));
 
   return (
-    <Tarjeta titulo="Fecundidad por edad de la madre (por 1.000 mujeres)" cargando={cargando} error={error} alto={400}>
+    <Tarjeta titulo="Fecundidad por edad de la madre (hijos por cada 1.000 mujeres)" cargando={cargando} error={error} alto={400}>
       {datos.length === 0 ? (
         <Vacio>No hay fecundidad por edad para este filtro.</Vacio>
       ) : (

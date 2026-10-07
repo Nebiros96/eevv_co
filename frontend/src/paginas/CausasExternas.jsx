@@ -72,7 +72,7 @@ export function CausasExternas() {
       </FilaIndicadores>
       <SerieExterna sql={sqlSerieExterna(filtros)} />
       <RankingTasas
-        titulo="Territorios con la tasa más alta"
+        titulo="Territorios con la tasa más alta por causa externa"
         sql={sqlRankingTasa(filtros, {
           tabla: "externas",
           numerador: "defunciones",
@@ -86,7 +86,7 @@ export function CausasExternas() {
       />
       <MapaCoropletas
         titulo={
-          filtros.externa === "Todas" ? "Causas externas por 100.000" : `${filtros.externa} por 100.000`
+          filtros.externa === "Todas" ? "Tasa de defunciones por causa externa por cada 100.000 habitantes a nivel municipal" : `${filtros.externa} por 100.000`
         }
         sql={mapaSql}
         municipal

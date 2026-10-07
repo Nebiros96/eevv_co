@@ -33,7 +33,7 @@ export function SerieAnual() {
   const eje = ejeCerrado(Math.max(0, ...filas.flatMap((fila) => [fila.nacimientos, fila.defunciones])));
 
   return (
-    <Tarjeta titulo="Nacimientos y defunciones anuales" cargando={cargando} error={error} alto={340}>
+    <Tarjeta titulo="Nacimientos y defunciones por año" cargando={cargando} error={error} alto={340}>
       {filas.length === 0 ? (
         <Vacio>No hay hechos vitales para este territorio.</Vacio>
       ) : (

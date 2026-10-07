@@ -49,7 +49,7 @@ export function CaidaNatalidad() {
           tono="relacion"
         />
         <Indicador
-          titulo="Edad promedio al nacer"
+          titulo="Edad promedio de la madre al dar a luz"
           valor={
             edadActual == null
               ? "—"

@@ -24,7 +24,7 @@ export function SerieTasas({ sql, natalidad = true, mortalidad = true }) {
   const eje = ejeCerrado(Math.max(0, ...valores.filter((valor) => Number.isFinite(valor))));
 
   return (
-    <Tarjeta titulo="Tasas brutas por 1.000 habitantes" cargando={cargando} error={error} alto={340}>
+    <Tarjeta titulo="Tasas brutas de mortalidad por 1.000 habitantes" cargando={cargando} error={error} alto={340}>
       {filas.length === 0 ? (
         <Vacio>No hay población proyectada para este territorio.</Vacio>
       ) : (
