@@ -58,12 +58,11 @@ export function SerieAnual() {
       titulo="Histórico de Nacimientos y Defunciones"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={340}
     >
       {filas.length === 0 && !cargando ? (
         <Vacio>No hay hechos vitales para este territorio.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={330} cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );

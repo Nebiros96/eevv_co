@@ -68,12 +68,11 @@ export function Ranking() {
       titulo="Entidades Territoriales con más defunciones y nacimientos"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={420}
     >
       {filas.length === 0 && !cargando ? (
         <Vacio>No hay territorios para este filtro.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={410} cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );

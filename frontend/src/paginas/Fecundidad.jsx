@@ -1,9 +1,13 @@
 import { FilaIndicadores, Indicador } from "@/componentes/Indicadores";
 import {
   GRUPOS_TGF,
+  anioComparacion,
+  anioInicial,
   nombreDepartamento,
   sqlFecundidadEdad,
+  sqlFecundidadEdadAnios,
   sqlMapaTgf,
+  sqlTgfCambioDepartamentos,
   sqlRankingTgf,
   sqlSerieFecundidad,
   sqlTgfReferencias,
@@ -13,14 +17,17 @@ import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal, decimal2, PUNTO_MEDIO_MADRE } from "@/estilos/tema";
 import { BarrasFecundidad } from "@/graficos/echarts/BarrasFecundidad";
+import { CambioTgf } from "@/graficos/echarts/CambioTgf";
 import { RankingTasas } from "@/graficos/echarts/RankingTasas";
 import { SerieTgf } from "@/graficos/echarts/SerieTgf";
-import { COLORES_TEMA } from "@/graficos/echarts/motor";
-import { MapaCoropletas } from "@/graficos/MapaCoropletas";
+import { COLORES_TEMA, ESCALA_TGF } from "@/graficos/echarts/motor";
+import { MapaCoropletas } from "@/graficos/echarts/MapaCoropletas";
 
 export function Fecundidad() {
   const { filtros } = useFiltros();
   const { catalogos } = useDatos();
+  const anioActual = anioComparacion(filtros, catalogos.anios);
+  const anioBase = anioInicial(catalogos.anios);
   const { filas } = useConsulta(sqlFecundidadEdad(filtros));
   const { filas: referenciasTgf } = useConsulta(sqlTgfReferencias(filtros));
   const departamento = nombreDepartamento(filtros, catalogos.municipios);
@@ -68,9 +75,16 @@ export function Fecundidad() {
           tono="hombres"
         />
       </FilaIndicadores>
-      <BarrasFecundidad sql={sqlFecundidadEdad(filtros)} />
       <div className="rejilla">
+        <div className="rejilla-completa">
+          <BarrasFecundidad
+            sql={sqlFecundidadEdadAnios(filtros, anioBase, anioActual)}
+            anioBase={anioBase}
+            anioActual={anioActual}
+          />
+        </div>
         <SerieTgf sql={sqlSerieFecundidad(filtros)} />
+        <CambioTgf sql={sqlTgfCambioDepartamentos()} />
         <RankingTasas
           titulo="Territorios con mayor TGF"
           sql={sqlRankingTgf(filtros)}
@@ -79,15 +93,16 @@ export function Fecundidad() {
           nombre="Hijos por mujer"
           referencias={referencias}
         />
+        <MapaCoropletas
+          titulo="Tasa global de fecundidad (TGF)"
+          sql={sqlMapaTgf(filtros)}
+          colores={ESCALA_TGF.colores}
+          cortes={ESCALA_TGF.cortes}
+          formato={decimal2}
+          unidad="Hijos por mujer"
+          hechoEtiqueta="Nacimientos de madres 15-49"
+        />
       </div>
-      <MapaCoropletas
-        titulo="Tasa global de fecundidad (TGF)"
-        sql={sqlMapaTgf(filtros)}
-        color={COLORES_TEMA.mujeres}
-        formato={decimal2}
-        unidad="Hijos por mujer"
-        hechoEtiqueta="Nacimientos de madres 15-49"
-      />
     </>
   );
 }

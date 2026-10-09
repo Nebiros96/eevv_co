@@ -51,12 +51,11 @@ export function SerieExterna({ sql }) {
       titulo="Tasas de defunciones por causas externas por 100.000 habitantes"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={360}
     >
       {filas.length === 0 && !cargando ? (
         <Vacio>No hay causas externas para este filtro.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={350} cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );

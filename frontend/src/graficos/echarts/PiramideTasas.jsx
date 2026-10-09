@@ -38,7 +38,7 @@ export function PiramideTasas({ sql }) {
       .sort((a, b) => a.indice - b.indice);
   }, [filas]);
 
-  const alto = Math.max(640, datos.length * 28);
+  const contenido = datos.length * 22 + 60;
   const opcion = useMemo(() => opcionPiramide(datos, decimal), [datos]);
 
   return (
@@ -46,12 +46,11 @@ export function PiramideTasas({ sql }) {
       titulo="Mortalidad por edad y sexo (por 1.000)"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={alto}
     >
       {datos.length === 0 && !cargando ? (
         <Vacio>No hay mortalidad específica para este filtro.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={alto - 28} cargando={cargando} />
+        <Grafico opcion={opcion} contenido={contenido} cargando={cargando} />
       )}
     </Tarjeta>
   );

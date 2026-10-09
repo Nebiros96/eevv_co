@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { COLORES_TEMA, echarts, TEMA } from "@/graficos/echarts/motor";
 
-export function Grafico({ opcion, alto = 320, llenar = false, cargando = false }) {
+export function Grafico({ opcion, contenido, cargando = false }) {
   const caja = useRef(null);
   const instancia = useRef(null);
 
@@ -35,11 +35,13 @@ export function Grafico({ opcion, alto = 320, llenar = false, cargando = false }
     }
   }, [cargando]);
 
-  return (
-    <div
-      ref={caja}
-      className={llenar ? "grafica-echarts grafica-echarts-llenar" : "grafica-echarts"}
-      style={llenar ? { minHeight: alto } : { height: alto }}
-    />
-  );
+  if (contenido) {
+    return (
+      <div className="grafica-desplazable">
+        <div ref={caja} className="grafica-echarts" style={{ height: "100%", minHeight: contenido }} />
+      </div>
+    );
+  }
+
+  return <div ref={caja} className="grafica-echarts grafica-echarts-llenar" />;
 }

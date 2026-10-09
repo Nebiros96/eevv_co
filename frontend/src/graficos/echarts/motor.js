@@ -1,5 +1,5 @@
 import * as echarts from "echarts/core";
-import { BarChart, LineChart } from "echarts/charts";
+import { BarChart, CustomChart, LineChart, MapChart, ScatterChart } from "echarts/charts";
 import {
   GraphicComponent,
   GridComponent,
@@ -13,7 +13,10 @@ import { CanvasRenderer } from "echarts/renderers";
 
 echarts.use([
   BarChart,
+  CustomChart,
   LineChart,
+  MapChart,
+  ScatterChart,
   GraphicComponent,
   GridComponent,
   LegendComponent,
@@ -53,6 +56,13 @@ export const COLORES_TEMA = {
   texto: "#0f172a",
   linea: "#eeeeee",
 };
+
+export const ESCALA_TGF = {
+  cortes: [0.8, 0.9, 1, 1.2, 1.5],
+  colores: ["#b5545c", "#d87a80", "#f3c6c9", "#b9eced", "#5fd3d4", "#1f9a9c"],
+};
+
+export const ESCALA_RIESGO = ["#fdf0d5", "#fdd9a8", "#ffb980", "#f0968a", "#d87a80", "#b5545c", "#7f2f3a"];
 
 echarts.registerTheme(TEMA, {
   color: PALETA,

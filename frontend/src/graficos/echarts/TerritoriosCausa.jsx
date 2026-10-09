@@ -10,19 +10,18 @@ export function TerritoriosCausa() {
     filtros.departamento !== "Todos" || filtros.municipio !== "Todos" ? "municipio" : "departamento";
   return (
     <RankingTasas
-      titulo="Defunciones por entidad territorial"
+      titulo="Defunciones por entidad territorial (Top 10)"
       sql={`
         SELECT ${columna} AS etiqueta, SUM(defunciones)::DOUBLE AS valor
         FROM causas
         WHERE ${whereCausas(filtros)}
         GROUP BY 1
         ORDER BY valor DESC
-        LIMIT 12
+        LIMIT 10
       `}
       color={COLORES_TEMA.defunciones}
       formato={entero}
       nombre="Defunciones"
-      alto={400}
       vacio="No hay territorios para esta causa."
     />
   );

@@ -7,7 +7,7 @@ import { ComparacionSexo } from "@/graficos/echarts/ComparacionSexo";
 import { EvolucionRelacion } from "@/graficos/echarts/EvolucionRelacion";
 import { Ranking } from "@/graficos/echarts/Ranking";
 import { SerieAnual } from "@/graficos/echarts/SerieAnual";
-import { Mapa } from "@/graficos/Mapa";
+import { Mapa } from "@/graficos/echarts/Mapa";
 
 function variacion(actual, anterior, anioAnterior) {
   if (!anterior) return null;

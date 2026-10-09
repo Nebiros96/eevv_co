@@ -65,12 +65,11 @@ export function TendenciaSexo() {
       titulo="Defunciones por sexo y año"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={400}
     >
       {datos.length === 0 && !cargando ? (
         <Vacio>No hay serie para esta causa.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={390} cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );

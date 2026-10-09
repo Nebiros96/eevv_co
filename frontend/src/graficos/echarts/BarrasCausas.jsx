@@ -26,7 +26,7 @@ export function BarrasCausas() {
       GROUP BY 1, 2
     ),
     top AS (
-      SELECT * FROM base ORDER BY defunciones DESC LIMIT 12
+      SELECT * FROM base ORDER BY defunciones DESC LIMIT 10
     )
     SELECT * FROM (
       SELECT * FROM top
@@ -75,12 +75,11 @@ export function BarrasCausas() {
       titulo="Principales causas de defunción"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={460}
     >
       {filas.length === 0 && !cargando ? (
         <Vacio>No hay causas para este filtro.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={450} cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );

@@ -37,12 +37,11 @@ export function Piramide() {
       titulo="Defunciones por grupo etario y sexo"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={460}
     >
       {datos.length === 0 && !cargando ? (
         <Vacio>No hay edad y sexo para este filtro.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={450} cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );

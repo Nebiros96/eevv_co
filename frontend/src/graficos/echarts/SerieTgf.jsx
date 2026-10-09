@@ -67,12 +67,11 @@ export function SerieTgf({ sql }) {
       titulo="Tasa global de fecundidad (hijos por mujer)"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={340}
     >
       {filas.length === 0 && !cargando ? (
         <Vacio>No hay TGF para este territorio.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={330} llenar cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );

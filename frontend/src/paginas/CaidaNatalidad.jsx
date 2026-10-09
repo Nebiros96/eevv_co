@@ -1,5 +1,5 @@
 import { FilaIndicadores, Indicador } from "@/componentes/Indicadores";
-import { anioComparacion, sqlFecundidadAnualEdad, sqlPerfilEdadMadre, sqlPerfilNatalidad, whereTerritorio } from "@/datos/consultas";
+import { anioComparacion, anioInicial, sqlFecundidadAnualEdad, sqlPerfilEdadMadre, sqlPerfilNatalidad, whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
@@ -7,8 +7,6 @@ import { decimal, entero, ORDEN_MADRE, PUNTO_MEDIO_MADRE } from "@/estilos/tema"
 import { EdadMadre } from "@/graficos/echarts/EdadMadre";
 import { PerfilNatalidad } from "@/graficos/echarts/PerfilNatalidad";
 import { COLORES_TEMA } from "@/graficos/echarts/motor";
-
-const BASE = 2019;
 
 function edadPromedio(filas, anio) {
   const parte = filas.filter((fila) => fila.anio === anio);
@@ -21,18 +19,19 @@ export function CaidaNatalidad() {
   const { filtros } = useFiltros();
   const { catalogos } = useDatos();
   const actual = anioComparacion(filtros, catalogos.anios);
+  const base = anioInicial(catalogos.anios);
   const territorio = whereTerritorio(filtros, { anio: false });
   const { filas: totales } = useConsulta(`
     SELECT anio, SUM(nacimientos)::DOUBLE AS nacimientos
     FROM panorama
-    WHERE ${territorio} AND anio IN (${BASE}, ${actual})
+    WHERE ${territorio} AND anio IN (${base}, ${actual})
     GROUP BY 1
   `);
   const { filas: edades } = useConsulta(sqlFecundidadAnualEdad(filtros));
-  const nacBase = totales.find((fila) => fila.anio === BASE)?.nacimientos ?? 0;
+  const nacBase = totales.find((fila) => fila.anio === base)?.nacimientos ?? 0;
   const nacActual = totales.find((fila) => fila.anio === actual)?.nacimientos ?? 0;
   const caida = nacBase ? (100 * (nacActual - nacBase)) / nacBase : null;
-  const edadBase = edadPromedio(edades, BASE);
+  const edadBase = edadPromedio(edades, base);
   const edadActual = edadPromedio(edades, actual);
 
   return (
@@ -42,7 +41,7 @@ export function CaidaNatalidad() {
         igual en todos los grupos de edad de la madre, ni por nivel educativo o régimen de salud.
       </p>
       <FilaIndicadores>
-        <Indicador titulo={`Nacimientos ${BASE}`} valor={entero(nacBase)} tono="diferencia" />
+        <Indicador titulo={`Nacimientos ${base}`} valor={entero(nacBase)} tono="diferencia" />
         <Indicador titulo={`Nacimientos ${actual}`} valor={entero(nacActual)} tono="nacimientos" />
         <Indicador
           titulo="Variación"
@@ -59,28 +58,28 @@ export function CaidaNatalidad() {
           tono="hombres"
         />
       </FilaIndicadores>
-      <EdadMadre filas={edades} anioBase={BASE} anioActual={actual} />
+      <EdadMadre filas={edades} anioBase={base} anioActual={actual} />
       <div className="rejilla">
         <PerfilNatalidad
           titulo="Variación por grupo etario de la madre"
-          sql={sqlPerfilEdadMadre(filtros, BASE, actual)}
+          sql={sqlPerfilEdadMadre(filtros, base, actual)}
           orden={ORDEN_MADRE}
-          anioBase={BASE}
+          anioBase={base}
           anioActual={actual}
         />
         <PerfilNatalidad
           titulo="Variación por régimen de salud"
-          sql={sqlPerfilNatalidad(filtros, "regimen", BASE, actual)}
+          sql={sqlPerfilNatalidad(filtros, "regimen", base, actual)}
           color={COLORES_TEMA.hombres}
-          anioBase={BASE}
+          anioBase={base}
           anioActual={actual}
         />
       </div>
       <PerfilNatalidad
         titulo="Variación por nivel educativo de la madre"
-        sql={sqlPerfilNatalidad(filtros, "educacion", BASE, actual)}
+        sql={sqlPerfilNatalidad(filtros, "educacion", base, actual)}
         color={COLORES_TEMA.mujeres}
-        anioBase={BASE}
+        anioBase={base}
         anioActual={actual}
       />
     </>

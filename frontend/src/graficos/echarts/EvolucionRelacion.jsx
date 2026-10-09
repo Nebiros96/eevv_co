@@ -124,12 +124,11 @@ export function EvolucionRelacion() {
       titulo="Evolución de defunciones por 100 nacimientos"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={520}
     >
       {filas.length === 0 && !cargando ? (
         <Vacio>No hay hechos vitales para este territorio.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={500} cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );
