@@ -72,9 +72,19 @@ export function BarraLateral({ pagina }) {
 
   return (
     <aside className="barra">
-      <p className="nota">
-        Para información más detallada, puede usar los filtros de abajo:
-      </p>
+      <div className="barra-cabecera">
+        <span className="barra-icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 5h16l-6 7.5V19l-4 1.5v-8z" />
+          </svg>
+        </span>
+        <div>
+          <h2 className="barra-titulo">Filtros</h2>
+          <p className="nota">
+            Para información más detallada:
+          </p>
+        </div>
+      </div>
       <Buscador
         etiqueta="Año"
         buscar={false}
@@ -127,7 +137,7 @@ export function BarraLateral({ pagina }) {
             <path d="M21 12a9 9 0 1 1-2.64-6.36" />
             <path d="M21 3v6h-6" />
           </svg>
-          <span className="solo-lectura">Reiniciar filtros</span>
+          <span>Limpiar filtros</span>
         </button>
       ) : null}
     </aside>

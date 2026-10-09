@@ -2,10 +2,11 @@ import { FilaIndicadores, Indicador } from "@/componentes/Indicadores";
 import { literal, sqlMapaTasa, sqlRankingTasa, sqlSerieExterna, whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, decimal } from "@/estilos/tema";
+import { decimal } from "@/estilos/tema";
+import { COLORES_TEMA } from "@/graficos/echarts/motor";
+import { RankingTasas } from "@/graficos/echarts/RankingTasas";
+import { SerieExterna } from "@/graficos/echarts/SerieExterna";
 import { MapaCoropletas } from "@/graficos/MapaCoropletas";
-import { RankingTasas } from "@/graficos/RankingTasas";
-import { SerieExterna } from "@/graficos/SerieExterna";
 
 function extraCausa(filtros) {
   if (!filtros.externa || filtros.externa === "Todas") return "TRUE";
@@ -80,7 +81,7 @@ export function CausasExternas() {
           extra,
           municipal: true,
         })}
-        color={COLORES.defunciones}
+        color={COLORES_TEMA.defunciones}
         formato={decimal}
         nombre="Por 100.000"
       />
@@ -90,7 +91,7 @@ export function CausasExternas() {
         }
         sql={mapaSql}
         municipal
-        color={COLORES.defunciones}
+        color={COLORES_TEMA.defunciones}
         formato={decimal}
         unidad="Por 100.000"
         hechoEtiqueta="Defunciones"

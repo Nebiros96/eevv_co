@@ -3,11 +3,11 @@ import { whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal, entero } from "@/estilos/tema";
-import { ComparacionSexo } from "@/graficos/ComparacionSexo";
-import { EvolucionRelacion } from "@/graficos/EvolucionRelacion";
+import { ComparacionSexo } from "@/graficos/echarts/ComparacionSexo";
+import { EvolucionRelacion } from "@/graficos/echarts/EvolucionRelacion";
+import { Ranking } from "@/graficos/echarts/Ranking";
+import { SerieAnual } from "@/graficos/echarts/SerieAnual";
 import { Mapa } from "@/graficos/Mapa";
-import { Ranking } from "@/graficos/Ranking";
-import { SerieAnual } from "@/graficos/SerieAnual";
 
 function variacion(actual, anterior, anioAnterior) {
   if (!anterior) return null;

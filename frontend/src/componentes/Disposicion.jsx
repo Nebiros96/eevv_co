@@ -14,7 +14,7 @@ const MENU = [
     titulo: "Nacimientos",
     hijos: [
       { id: "fecundidad", titulo: "Fecundidad" },
-      { id: "caida", titulo: "Caída de la natalidad" },
+      { id: "caida", titulo: "Natalidad" },
     ],
   },
   {

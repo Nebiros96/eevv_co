@@ -138,7 +138,7 @@ export function Buscador({
   }
 
   return (
-    <div className="campo buscador" ref={contenedor}>
+    <div className={`campo buscador${valor !== vacioValor ? " con-valor" : ""}`} ref={contenedor}>
       <span>{etiqueta}</span>
       {buscar ? (
         <input

@@ -3,9 +3,10 @@ import { anioComparacion, sqlFecundidadAnualEdad, sqlPerfilEdadMadre, sqlPerfilN
 import { useConsulta } from "@/datos/useConsulta";
 import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, decimal, entero, ORDEN_MADRE, PUNTO_MEDIO_MADRE } from "@/estilos/tema";
-import { EdadMadre } from "@/graficos/EdadMadre";
-import { PerfilNatalidad } from "@/graficos/PerfilNatalidad";
+import { decimal, entero, ORDEN_MADRE, PUNTO_MEDIO_MADRE } from "@/estilos/tema";
+import { EdadMadre } from "@/graficos/echarts/EdadMadre";
+import { PerfilNatalidad } from "@/graficos/echarts/PerfilNatalidad";
+import { COLORES_TEMA } from "@/graficos/echarts/motor";
 
 const BASE = 2019;
 
@@ -64,17 +65,23 @@ export function CaidaNatalidad() {
           titulo="Variación por grupo etario de la madre"
           sql={sqlPerfilEdadMadre(filtros, BASE, actual)}
           orden={ORDEN_MADRE}
+          anioBase={BASE}
+          anioActual={actual}
         />
         <PerfilNatalidad
           titulo="Variación por régimen de salud"
           sql={sqlPerfilNatalidad(filtros, "regimen", BASE, actual)}
-          color={COLORES.hombres}
+          color={COLORES_TEMA.hombres}
+          anioBase={BASE}
+          anioActual={actual}
         />
       </div>
       <PerfilNatalidad
         titulo="Variación por nivel educativo de la madre"
         sql={sqlPerfilNatalidad(filtros, "educacion", BASE, actual)}
-        color={COLORES.mujeres}
+        color={COLORES_TEMA.mujeres}
+        anioBase={BASE}
+        anioActual={actual}
       />
     </>
   );
