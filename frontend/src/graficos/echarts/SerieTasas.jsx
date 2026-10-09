@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { Tarjeta, Vacio } from "@/componentes/Tarjeta";
+import { nombreTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
+import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal } from "@/estilos/tema";
 import { Grafico } from "@/graficos/echarts/Grafico";
@@ -8,48 +10,77 @@ import { COLORES_TEMA } from "@/graficos/echarts/motor";
 import {
   ejeCategoria,
   ejeValor,
+  etiqueta,
   leyenda,
   lineaAnio,
-  serieLinea,
   tooltip,
 } from "@/graficos/echarts/opciones";
 
+function linea(id, nombre, color, datos, { comparar = false, area = false, markLine } = {}) {
+  return {
+    id,
+    name: nombre,
+    type: "line",
+    data: datos,
+    symbol: "circle",
+    symbolSize: comparar ? 5 : 7,
+    lineStyle: { width: comparar ? 2 : 2.5, type: comparar ? [6, 4] : "solid", color },
+    itemStyle: { color, borderColor: "#fff", borderWidth: 1.5 },
+    areaStyle: area ? { color, opacity: 0.08 } : undefined,
+    label: etiqueta(decimal, { position: "top", show: !comparar }),
+    labelLayout: { hideOverlap: true },
+    markLine,
+  };
+}
+
 export function SerieTasas({ sql, natalidad = true, mortalidad = true }) {
   const { filtros } = useFiltros();
+  const { catalogos } = useDatos();
+  const comparar = filtros.departamento !== "Todos" || filtros.municipio !== "Todos";
+  const territorio = nombreTerritorio(filtros, catalogos.municipios);
   const { filas, cargando, error } = useConsulta(sql);
+  const varias = natalidad && mortalidad;
 
   const opcion = useMemo(() => {
-    const valores = filas.flatMap((fila) => [
-      natalidad ? fila.natalidad : null,
-      mortalidad ? fila.mortalidad : null,
-    ]);
-    const series = [];
-    if (natalidad) {
-      series.push(
-        serieLinea("natalidad", "Natalidad", COLORES_TEMA.nacimientos, filas.map((fila) => fila.natalidad), {
-          formato: decimal,
-          area: true,
-        }),
+    const metricas = [
+      natalidad
+        ? { id: "natalidad", nombre: "Natalidad", color: COLORES_TEMA.nacimientos, local: "natalidad", nacional: "natalidad_nacional" }
+        : null,
+      mortalidad
+        ? { id: "mortalidad", nombre: "Mortalidad", color: COLORES_TEMA.defunciones, local: "mortalidad", nacional: "mortalidad_nacional" }
+        : null,
+    ].filter(Boolean);
+    const valores = filas.flatMap((fila) =>
+      metricas.flatMap((metrica) => (comparar ? [fila[metrica.nacional], fila[metrica.local]] : [fila[metrica.local]])),
+    );
+    const series = metricas.flatMap((metrica, indice) => {
+      const nacional = linea(
+        `${metrica.id}-nacional`,
+        comparar ? (varias ? `Nacional · ${metrica.nombre}` : "Nacional") : metrica.nombre,
+        comparar ? COLORES_TEMA.gris : metrica.color,
+        filas.map((fila) => (comparar ? fila[metrica.nacional] : fila[metrica.local])),
+        { comparar, area: !comparar, markLine: indice === 0 ? lineaAnio(filtros.anio) : undefined },
       );
-    }
-    if (mortalidad) {
-      series.push(
-        serieLinea("mortalidad", "Mortalidad", COLORES_TEMA.defunciones, filas.map((fila) => fila.mortalidad), {
-          formato: decimal,
-          area: true,
-        }),
-      );
-    }
-    if (series[0]) series[0].markLine = lineaAnio(filtros.anio);
+      if (!comparar) return [nacional];
+      return [
+        nacional,
+        linea(
+          `${metrica.id}-local`,
+          varias ? `${territorio} · ${metrica.nombre}` : territorio,
+          metrica.color,
+          filas.map((fila) => fila[metrica.local]),
+        ),
+      ];
+    });
     return {
       tooltip: tooltip(decimal),
-      legend: leyenda(),
+      legend: leyenda({ show: comparar || varias }),
       grid: { top: 44, right: 24, bottom: 8, left: 8, containLabel: true },
       xAxis: ejeCategoria(filas.map((fila) => String(fila.anio))),
       yAxis: ejeValor(Math.max(0, ...valores.filter((valor) => Number.isFinite(valor)))),
       series,
     };
-  }, [filas, filtros.anio, mortalidad, natalidad]);
+  }, [comparar, filas, filtros.anio, mortalidad, natalidad, territorio, varias]);
 
   return (
     <Tarjeta

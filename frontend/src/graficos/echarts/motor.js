@@ -1,6 +1,7 @@
 import * as echarts from "echarts/core";
 import { BarChart, LineChart } from "echarts/charts";
 import {
+  GraphicComponent,
   GridComponent,
   LegendComponent,
   MarkAreaComponent,
@@ -13,6 +14,7 @@ import { CanvasRenderer } from "echarts/renderers";
 echarts.use([
   BarChart,
   LineChart,
+  GraphicComponent,
   GridComponent,
   LegendComponent,
   MarkAreaComponent,
@@ -77,7 +79,7 @@ echarts.registerTheme(TEMA, {
     },
     splitLine: { lineStyle: { color: [COLORES_TEMA.linea] } },
   },
-  line: { smooth: true, symbol: "emptyCircle", symbolSize: 4 },
+  line: { smooth: false, symbol: "emptyCircle", symbolSize: 4 },
   graph: { itemStyle: { color: "#d87a80" }, linkStyle: { color: "#2ec7c9" } },
 });
 

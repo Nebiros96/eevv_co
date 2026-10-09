@@ -1,12 +1,15 @@
 import { FilaIndicadores, Indicador } from "@/componentes/Indicadores";
 import {
   GRUPOS_TGF,
+  nombreDepartamento,
   sqlFecundidadEdad,
   sqlMapaTgf,
   sqlRankingTgf,
   sqlSerieFecundidad,
+  sqlTgfReferencias,
 } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
+import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal, decimal2, PUNTO_MEDIO_MADRE } from "@/estilos/tema";
 import { BarrasFecundidad } from "@/graficos/echarts/BarrasFecundidad";
@@ -17,7 +20,18 @@ import { MapaCoropletas } from "@/graficos/MapaCoropletas";
 
 export function Fecundidad() {
   const { filtros } = useFiltros();
+  const { catalogos } = useDatos();
   const { filas } = useConsulta(sqlFecundidadEdad(filtros));
+  const { filas: referenciasTgf } = useConsulta(sqlTgfReferencias(filtros));
+  const departamento = nombreDepartamento(filtros, catalogos.municipios);
+  const referencias = [
+    Number.isFinite(referenciasTgf[0]?.nacional)
+      ? { nombre: "Nacional", valor: referenciasTgf[0].nacional, color: COLORES_TEMA.gris, discontinua: true }
+      : null,
+    departamento && Number.isFinite(referenciasTgf[0]?.departamento)
+      ? { nombre: departamento, valor: referenciasTgf[0].departamento, color: COLORES_TEMA.mujeres }
+      : null,
+  ].filter(Boolean);
   const tgf = GRUPOS_TGF.reduce((suma, grupo) => {
     const fila = filas.find((item) => item.grupo_edad_madre === grupo);
     return suma + (fila?.tasa ?? 0) / 1000;
@@ -63,6 +77,7 @@ export function Fecundidad() {
           color={COLORES_TEMA.mujeres}
           formato={decimal2}
           nombre="Hijos por mujer"
+          referencias={referencias}
         />
       </div>
       <MapaCoropletas

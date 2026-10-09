@@ -1,7 +1,7 @@
 import { ejeCerrado, ejeSimetrico, entero, marca } from "@/estilos/tema";
 import { COLORES_TEMA } from "@/graficos/echarts/motor";
 
-export const FUENTE = '"Segoe UI", system-ui, sans-serif';
+export const FUENTE = '"IBM Plex Sans Variable", system-ui, sans-serif';
 
 export const TEXTO = { fontFamily: FUENTE, color: COLORES_TEMA.texto };
 
