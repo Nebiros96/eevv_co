@@ -12,13 +12,12 @@ export function RankingTasas({
   color,
   formato = entero,
   nombre = "Tasa",
-  alto = 420,
   vacio = "No hay tasas para este territorio.",
   referencias = [],
 }) {
   const { filas, cargando, error } = useConsulta(sql);
   const datos = useMemo(() => filas.filter((fila) => Number.isFinite(fila.valor)), [filas]);
-  const altura = Math.max(alto, datos.length * 32 + 48);
+  const contenido = datos.length * 32 + 48;
 
   const opcion = useMemo(() => {
     const marcas = referencias.filter((referencia) => Number.isFinite(referencia.valor));
@@ -87,11 +86,11 @@ export function RankingTasas({
   }, [color, datos, formato, nombre, referencias]);
 
   return (
-    <Tarjeta titulo={titulo} cargando={cargando && datos.length === 0} error={error} alto={altura}>
+    <Tarjeta titulo={titulo} cargando={cargando && datos.length === 0} error={error}>
       {datos.length === 0 && !cargando ? (
         <Vacio>{vacio}</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={altura - 28} cargando={cargando} />
+        <Grafico opcion={opcion} contenido={contenido} cargando={cargando} />
       )}
     </Tarjeta>
   );

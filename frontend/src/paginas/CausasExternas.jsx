@@ -3,10 +3,10 @@ import { literal, sqlMapaTasa, sqlRankingTasa, sqlSerieExterna, whereTerritorio 
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal } from "@/estilos/tema";
-import { COLORES_TEMA } from "@/graficos/echarts/motor";
+import { COLORES_TEMA, ESCALA_RIESGO } from "@/graficos/echarts/motor";
 import { RankingTasas } from "@/graficos/echarts/RankingTasas";
 import { SerieExterna } from "@/graficos/echarts/SerieExterna";
-import { MapaCoropletas } from "@/graficos/MapaCoropletas";
+import { MapaCoropletas } from "@/graficos/echarts/MapaCoropletas";
 
 function extraCausa(filtros) {
   if (!filtros.externa || filtros.externa === "Todas") return "TRUE";
@@ -91,7 +91,7 @@ export function CausasExternas() {
         }
         sql={mapaSql}
         municipal
-        color={COLORES_TEMA.defunciones}
+        colores={ESCALA_RIESGO}
         formato={decimal}
         unidad="Por 100.000"
         hechoEtiqueta="Defunciones"

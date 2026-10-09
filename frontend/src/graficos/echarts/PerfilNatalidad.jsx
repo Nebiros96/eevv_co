@@ -31,7 +31,7 @@ export function PerfilNatalidad({
         }),
     [filas, orden],
   );
-  const altura = Math.max(380, datos.length * 36 + 36);
+  const contenido = datos.length * 36 + 36;
 
   const opcion = useMemo(
     () => ({
@@ -80,11 +80,11 @@ export function PerfilNatalidad({
   );
 
   return (
-    <Tarjeta titulo={titulo} cargando={cargando && datos.length === 0} error={error} alto={altura}>
+    <Tarjeta titulo={titulo} cargando={cargando && datos.length === 0} error={error}>
       {datos.length === 0 && !cargando ? (
         <Vacio>No hay desagregación para este filtro.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={altura - 28} cargando={cargando} />
+        <Grafico opcion={opcion} contenido={contenido} cargando={cargando} />
       )}
     </Tarjeta>
   );

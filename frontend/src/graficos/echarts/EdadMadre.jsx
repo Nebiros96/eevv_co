@@ -48,11 +48,11 @@ export function EdadMadre({ filas, anioBase, anioActual }) {
   );
 
   return (
-    <Tarjeta titulo="Nacimientos según grupo etario de la madre" alto={400}>
+    <Tarjeta titulo="Nacimientos según grupo etario de la madre">
       {datos.length === 0 ? (
         <Vacio>No hay edad de la madre para comparar.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={390} />
+        <Grafico opcion={opcion} />
       )}
     </Tarjeta>
   );

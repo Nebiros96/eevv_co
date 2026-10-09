@@ -10,11 +10,11 @@ import {
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal } from "@/estilos/tema";
-import { COLORES_TEMA } from "@/graficos/echarts/motor";
+import { COLORES_TEMA, ESCALA_RIESGO } from "@/graficos/echarts/motor";
 import { PiramideTasas } from "@/graficos/echarts/PiramideTasas";
 import { RankingTasas } from "@/graficos/echarts/RankingTasas";
 import { SerieTasas } from "@/graficos/echarts/SerieTasas";
-import { MapaCoropletas } from "@/graficos/MapaCoropletas";
+import { MapaCoropletas } from "@/graficos/echarts/MapaCoropletas";
 
 export function Mortalidad() {
   const { filtros } = useFiltros();
@@ -48,13 +48,12 @@ export function Mortalidad() {
           color={COLORES_TEMA.defunciones}
           formato={decimal}
           nombre="Por 1.000"
-          alto={640}
         />
       </div>
       <MapaCoropletas
         titulo="Mortalidad estandarizada por edad"
         sql={sqlMapaEstandar(filtros)}
-        color={COLORES_TEMA.defunciones}
+        colores={ESCALA_RIESGO}
         formato={decimal}
         unidad="Por 1.000 (estándar 2019)"
       />

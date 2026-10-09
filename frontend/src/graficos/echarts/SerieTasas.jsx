@@ -87,12 +87,11 @@ export function SerieTasas({ sql, natalidad = true, mortalidad = true }) {
       titulo="Tasas brutas de mortalidad por 1.000 habitantes"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={340}
     >
       {filas.length === 0 && !cargando ? (
         <Vacio>No hay población proyectada para este territorio.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={330} cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );

@@ -19,6 +19,6 @@ Los filtros cubren año, departamento, municipio y causa.
 | Interfaz | React 19 + Vite |
 | Consultas | DuckDB WASM sobre Parquet |
 | Gráficos | Apache ECharts (tema macarons) |
-| Mapa | Leaflet / React Leaflet |
+| Mapa | Apache ECharts |
 
-El frontend vive en `frontend/`. Los gráficos están en `frontend/src/graficos/echarts/`: `motor.js` registra los módulos de ECharts y el tema, `Grafico.jsx` es el contenedor común y `opciones.js` reúne ejes, etiquetas y tooltips compartidos. Los cortes analíticos están en `datos/` (`panorama.parquet`, `causas.parquet`, `geografia.parquet`). Los GeoJSON del mapa están en `frontend/public/mapas/`.
+El frontend vive en `frontend/`. Los gráficos y los mapas están en `frontend/src/graficos/echarts/`: `motor.js` registra los módulos de ECharts y el tema, `Grafico.jsx` es el contenedor común y `opciones.js` reúne ejes, etiquetas y tooltips compartidos. Los cortes analíticos están en `datos/` (`panorama.parquet`, `causas.parquet`, `geografia.parquet`). Los GeoJSON del mapa están en `frontend/public/mapas/`.

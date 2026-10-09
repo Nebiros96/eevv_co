@@ -428,14 +428,17 @@ button, select, input { font: inherit; }
 
 .rejilla {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
+
+.rejilla-completa { grid-column: 1 / -1; }
 
 .tarjeta {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 480px;
+  min-width: 0;
   background: #fff;
   border: 1px solid #e4eef6;
   border-radius: 14px;
@@ -463,24 +466,36 @@ button, select, input { font: inherit; }
 
 .grafica-echarts-llenar {
   flex: 1;
-  height: 100%;
   min-height: 0;
+}
+
+.grafica-desplazable {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .aviso { color: #64748b; margin: 1rem 0; }
 .aviso.error { color: #be123c; }
 
-.marco-mapa { position: relative; }
-.mapa { height: 480px; border-radius: 10px; background: #dbe4ee; }
+.marco-mapa {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
 .leyenda {
   position: absolute;
   z-index: 800;
-  left: 12px;
-  bottom: 12px;
+  left: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   gap: 0.45rem;
   padding: 0.35rem 0.55rem;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: rgb(255 255 255 / 92%);
   color: #334155;
@@ -490,26 +505,21 @@ button, select, input { font: inherit; }
   width: 4.25rem;
   height: 0.55rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, #0f766e, #f8fafc);
 }
-.leyenda-barra-alta {
-  background: linear-gradient(90deg, #f8fafc, #9f1239);
+.leyenda-clases {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
 }
-.etiqueta-mapa {
-  background: transparent;
-  border: 0;
-  color: #0f172a;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 14px;
-  text-align: center;
-  text-shadow:
-    0 0 2px #fff,
-    1px 0 0 #fff,
-    -1px 0 0 #fff,
-    0 1px 0 #fff,
-    0 -1px 0 #fff;
-  pointer-events: none;
+.leyenda-clase {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.leyenda-muestra {
+  width: 0.85rem;
+  height: 0.6rem;
+  border-radius: 3px;
 }
 
 @media (max-width: 1100px) {

@@ -54,6 +54,11 @@ export function anioComparacion(filtros, anios) {
   return Number(anios[0]);
 }
 
+export function anioInicial(anios) {
+  const numeros = (anios ?? []).map(Number).filter(Number.isFinite);
+  return numeros.length ? Math.min(...numeros) : null;
+}
+
 export function sqlTasasVitales(filtros) {
   return `
     WITH hechos AS (
@@ -185,7 +190,7 @@ export function sqlRankingTasa(
     GROUP BY 1
     HAVING SUM(p.poblacion) >= 10000
     ORDER BY valor DESC NULLS LAST
-    LIMIT 12
+    LIMIT 10
   `;
 }
 
@@ -214,6 +219,37 @@ export function sqlFecundidadEdad(filtros) {
     FROM nac n
     JOIN muj m USING (anio, grupo_edad_madre)
     GROUP BY 1
+  `;
+}
+
+export function sqlFecundidadEdadAnios(filtros, anioBase, anioActual) {
+  const territorio = whereTerritorio(filtros, { anio: false });
+  const grupos = GRUPOS_MADRE.map(literal).join(", ");
+  const anios = [...new Set([Number(anioBase), Number(anioActual)])].join(", ");
+  return `
+    WITH nac AS (
+      SELECT anio, grupo_edad_madre, SUM(nacimientos)::DOUBLE AS nacimientos
+      FROM nac_edad
+      WHERE ${territorio}
+        AND grupo_edad_madre IN (${grupos})
+        AND anio IN (${anios})
+      GROUP BY 1, 2
+    ),
+    muj AS (
+      SELECT anio, ${MADRE_DESDE_POB} AS grupo_edad_madre, SUM(poblacion)::DOUBLE AS mujeres
+      FROM poblacion
+      WHERE ${territorio}
+        AND sexo = 'Mujeres'
+        AND ${MADRE_DESDE_POB} IS NOT NULL
+        AND anio IN (${anios})
+      GROUP BY 1, 2
+    )
+    SELECT n.anio,
+           n.grupo_edad_madre,
+           1000 * SUM(n.nacimientos) / NULLIF(SUM(m.mujeres), 0) AS tasa
+    FROM nac n
+    JOIN muj m USING (anio, grupo_edad_madre)
+    GROUP BY 1, 2
   `;
 }
 
@@ -306,6 +342,45 @@ export function nombreDepartamento(filtros, municipios = []) {
     );
   }
   return null;
+}
+
+export function sqlTgfCambioDepartamentos() {
+  const tgf = GRUPOS_TGF.map(literal).join(", ");
+  return `
+    WITH nac AS (
+      SELECT anio,
+             cod_departamento,
+             MAX(departamento) AS departamento,
+             grupo_edad_madre,
+             SUM(nacimientos)::DOUBLE AS nacimientos
+      FROM nac_edad
+      WHERE departamento <> '' AND grupo_edad_madre IN (${tgf})
+      GROUP BY anio, cod_departamento, grupo_edad_madre
+    ),
+    muj AS (
+      SELECT anio,
+             cod_departamento,
+             ${MADRE_DESDE_POB} AS grupo_edad_madre,
+             SUM(poblacion)::DOUBLE AS mujeres
+      FROM poblacion
+      WHERE sexo = 'Mujeres' AND ${MADRE_DESDE_POB} IN (${tgf})
+      GROUP BY 1, 2, 3
+    ),
+    fx AS (
+      SELECT n.anio,
+             n.cod_departamento,
+             MAX(n.departamento) AS departamento,
+             n.grupo_edad_madre,
+             SUM(n.nacimientos) / NULLIF(SUM(m.mujeres), 0) AS fx
+      FROM nac n
+      JOIN muj m USING (anio, cod_departamento, grupo_edad_madre)
+      GROUP BY n.anio, n.cod_departamento, n.grupo_edad_madre
+    )
+    SELECT anio, cod_departamento, MAX(departamento) AS departamento, 5 * SUM(fx) AS tgf
+    FROM fx
+    GROUP BY anio, cod_departamento
+    ORDER BY departamento, anio
+  `;
 }
 
 export function sqlSerieFecundidad(filtros) {
@@ -491,7 +566,7 @@ export function sqlRankingTgf(filtros) {
     FROM fx
     GROUP BY 1
     ORDER BY valor DESC NULLS LAST
-    LIMIT 12
+    LIMIT 10
   `;
 }
 
@@ -574,7 +649,7 @@ export function sqlRankingEstandar(filtros) {
     JOIN estandar e USING (grupo_edad)
     GROUP BY 1
     ORDER BY valor DESC NULLS LAST
-    LIMIT 12
+    LIMIT 10
   `;
 }
 

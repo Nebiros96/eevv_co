@@ -66,12 +66,11 @@ export function ComparacionSexo() {
       titulo="Nacimientos y defunciones por sexo"
       cargando={cargando && filas.length === 0}
       error={error}
-      alto={420}
     >
       {datos.length === 0 && !cargando ? (
         <Vacio>No hay desagregación por sexo.</Vacio>
       ) : (
-        <Grafico opcion={opcion} alto={410} cargando={cargando} />
+        <Grafico opcion={opcion} cargando={cargando} />
       )}
     </Tarjeta>
   );
