@@ -3,10 +3,10 @@ import { literal, whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal, entero } from "@/estilos/tema";
-import { BarrasCausas } from "@/graficos/BarrasCausas";
-import { Piramide } from "@/graficos/Piramide";
-import { TendenciaSexo } from "@/graficos/TendenciaSexo";
-import { TerritoriosCausa } from "@/graficos/TerritoriosCausa";
+import { BarrasCausas } from "@/graficos/echarts/BarrasCausas";
+import { Piramide } from "@/graficos/echarts/Piramide";
+import { TendenciaSexo } from "@/graficos/echarts/TendenciaSexo";
+import { TerritoriosCausa } from "@/graficos/echarts/TerritoriosCausa";
 
 function medidaCausa(texto) {
   const largo = String(texto ?? "").length;

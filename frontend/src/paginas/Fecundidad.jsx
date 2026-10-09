@@ -8,11 +8,12 @@ import {
 } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, decimal, decimal2, PUNTO_MEDIO_MADRE } from "@/estilos/tema";
-import { BarrasFecundidad } from "@/graficos/BarrasFecundidad";
+import { decimal, decimal2, PUNTO_MEDIO_MADRE } from "@/estilos/tema";
+import { BarrasFecundidad } from "@/graficos/echarts/BarrasFecundidad";
+import { RankingTasas } from "@/graficos/echarts/RankingTasas";
+import { SerieTgf } from "@/graficos/echarts/SerieTgf";
+import { COLORES_TEMA } from "@/graficos/echarts/motor";
 import { MapaCoropletas } from "@/graficos/MapaCoropletas";
-import { RankingTasas } from "@/graficos/RankingTasas";
-import { SerieTgf } from "@/graficos/SerieTgf";
 
 export function Fecundidad() {
   const { filtros } = useFiltros();
@@ -59,7 +60,7 @@ export function Fecundidad() {
         <RankingTasas
           titulo="Territorios con mayor TGF"
           sql={sqlRankingTgf(filtros)}
-          color={COLORES.mujeres}
+          color={COLORES_TEMA.mujeres}
           formato={decimal2}
           nombre="Hijos por mujer"
         />
@@ -67,7 +68,7 @@ export function Fecundidad() {
       <MapaCoropletas
         titulo="Tasa global de fecundidad (TGF)"
         sql={sqlMapaTgf(filtros)}
-        color={COLORES.mujeres}
+        color={COLORES_TEMA.mujeres}
         formato={decimal2}
         unidad="Hijos por mujer"
         hechoEtiqueta="Nacimientos de madres 15-49"

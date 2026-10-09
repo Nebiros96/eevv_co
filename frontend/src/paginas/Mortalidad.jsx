@@ -9,11 +9,12 @@ import {
 } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { COLORES, decimal } from "@/estilos/tema";
+import { decimal } from "@/estilos/tema";
+import { COLORES_TEMA } from "@/graficos/echarts/motor";
+import { PiramideTasas } from "@/graficos/echarts/PiramideTasas";
+import { RankingTasas } from "@/graficos/echarts/RankingTasas";
+import { SerieTasas } from "@/graficos/echarts/SerieTasas";
 import { MapaCoropletas } from "@/graficos/MapaCoropletas";
-import { PiramideTasas } from "@/graficos/PiramideTasas";
-import { RankingTasas } from "@/graficos/RankingTasas";
-import { SerieTasas } from "@/graficos/SerieTasas";
 
 export function Mortalidad() {
   const { filtros } = useFiltros();
@@ -44,7 +45,7 @@ export function Mortalidad() {
         <RankingTasas
           titulo="Mortalidad estandarizada más alta"
           sql={sqlRankingEstandar(filtros)}
-          color={COLORES.defunciones}
+          color={COLORES_TEMA.defunciones}
           formato={decimal}
           nombre="Por 1.000"
           alto={640}
@@ -53,7 +54,7 @@ export function Mortalidad() {
       <MapaCoropletas
         titulo="Mortalidad estandarizada por edad"
         sql={sqlMapaEstandar(filtros)}
-        color={COLORES.defunciones}
+        color={COLORES_TEMA.defunciones}
         formato={decimal}
         unidad="Por 1.000 (estándar 2019)"
       />
