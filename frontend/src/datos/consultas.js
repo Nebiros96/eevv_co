@@ -78,33 +78,42 @@ export function sqlTasasVitales(filtros) {
   `;
 }
 
-export function sqlSerieTasas(filtros) {
-  const territorio = whereTerritorio(filtros, { anio: false });
+function sqlTasasPorAnio(donde) {
   return `
-    WITH hechos AS (
+    SELECT h.anio,
+           1000 * SUM(h.nacimientos) / NULLIF(SUM(p.poblacion), 0) AS natalidad,
+           1000 * SUM(h.defunciones) / NULLIF(SUM(p.poblacion), 0) AS mortalidad
+    FROM (
       SELECT anio, cod_departamento, cod_municipio,
              SUM(nacimientos)::DOUBLE AS nacimientos,
              SUM(defunciones)::DOUBLE AS defunciones
       FROM panorama
-      WHERE ${territorio}
+      WHERE ${donde}
       GROUP BY 1, 2, 3
-    ),
-    pob AS (
+    ) h
+    JOIN (
       SELECT anio, cod_departamento, cod_municipio, SUM(poblacion)::DOUBLE AS poblacion
       FROM poblacion
-      WHERE ${territorio}
+      WHERE ${donde}
       GROUP BY 1, 2, 3
-    )
-    SELECT h.anio,
-           SUM(h.nacimientos)::DOUBLE AS nacimientos,
-           SUM(h.defunciones)::DOUBLE AS defunciones,
-           SUM(p.poblacion)::DOUBLE AS poblacion,
-           1000 * SUM(h.nacimientos) / NULLIF(SUM(p.poblacion), 0) AS natalidad,
-           1000 * SUM(h.defunciones) / NULLIF(SUM(p.poblacion), 0) AS mortalidad
-    FROM hechos h
-    JOIN pob p USING (anio, cod_departamento, cod_municipio)
+    ) p USING (anio, cod_departamento, cod_municipio)
     GROUP BY 1
-    ORDER BY 1
+  `;
+}
+
+export function sqlSerieTasas(filtros) {
+  const local = whereTerritorio(filtros, { anio: false });
+  return `
+    WITH nacional AS (${sqlTasasPorAnio("TRUE")}),
+         local AS (${sqlTasasPorAnio(local)})
+    SELECT n.anio,
+           n.natalidad AS natalidad_nacional,
+           n.mortalidad AS mortalidad_nacional,
+           l.natalidad,
+           l.mortalidad
+    FROM nacional n
+    LEFT JOIN local l USING (anio)
+    ORDER BY n.anio
   `;
 }
 
@@ -208,36 +217,116 @@ export function sqlFecundidadEdad(filtros) {
   `;
 }
 
-export function sqlSerieFecundidad(filtros) {
-  const territorio = whereTerritorio(filtros, { anio: false });
+function sqlTgfPorAnio(donde) {
   const tgf = GRUPOS_TGF.map(literal).join(", ");
   return `
-    WITH nac AS (
-      SELECT anio, grupo_edad_madre, SUM(nacimientos)::DOUBLE AS nacimientos
-      FROM nac_edad
-      WHERE ${territorio}
-        AND grupo_edad_madre IN (${tgf})
-      GROUP BY 1, 2
-    ),
-    muj AS (
-      SELECT anio, ${MADRE_DESDE_POB} AS grupo_edad_madre, SUM(poblacion)::DOUBLE AS mujeres
-      FROM poblacion
-      WHERE ${territorio}
-        AND sexo = 'Mujeres'
-        AND ${MADRE_DESDE_POB} IN (${tgf})
-      GROUP BY 1, 2
-    ),
-    fx AS (
+    SELECT anio, 5 * SUM(fx) AS tgf
+    FROM (
       SELECT n.anio, n.grupo_edad_madre,
              SUM(n.nacimientos) / NULLIF(SUM(m.mujeres), 0) AS fx
-      FROM nac n
-      JOIN muj m USING (anio, grupo_edad_madre)
+      FROM (
+        SELECT anio, grupo_edad_madre, SUM(nacimientos)::DOUBLE AS nacimientos
+        FROM nac_edad
+        WHERE ${donde} AND grupo_edad_madre IN (${tgf})
+        GROUP BY 1, 2
+      ) n
+      JOIN (
+        SELECT anio, ${MADRE_DESDE_POB} AS grupo_edad_madre, SUM(poblacion)::DOUBLE AS mujeres
+        FROM poblacion
+        WHERE ${donde} AND sexo = 'Mujeres' AND ${MADRE_DESDE_POB} IN (${tgf})
+        GROUP BY 1, 2
+      ) m USING (anio, grupo_edad_madre)
       GROUP BY 1, 2
     )
-    SELECT anio, 5 * SUM(fx) AS tgf
-    FROM fx
-    GROUP BY 1
-    ORDER BY 1
+    GROUP BY anio
+  `;
+}
+
+function sqlTgfAgregada(donde) {
+  const tgf = GRUPOS_TGF.map(literal).join(", ");
+  return `
+    SELECT 5 * SUM(fx) AS tgf
+    FROM (
+      SELECT n.grupo_edad_madre,
+             SUM(n.nacimientos) / NULLIF(SUM(m.mujeres), 0) AS fx
+      FROM (
+        SELECT grupo_edad_madre, SUM(nacimientos)::DOUBLE AS nacimientos
+        FROM nac_edad
+        WHERE ${donde} AND grupo_edad_madre IN (${tgf})
+        GROUP BY 1
+      ) n
+      JOIN (
+        SELECT ${MADRE_DESDE_POB} AS grupo_edad_madre, SUM(poblacion)::DOUBLE AS mujeres
+        FROM poblacion
+        WHERE ${donde} AND sexo = 'Mujeres' AND ${MADRE_DESDE_POB} IN (${tgf})
+        GROUP BY 1
+      ) m USING (grupo_edad_madre)
+      GROUP BY 1
+    )
+  `;
+}
+
+function dondeAnio(filtros) {
+  return whereTerritorio({ ...filtros, departamento: "Todos", municipio: "Todos" });
+}
+
+function dondeDepartamento(filtros) {
+  const anio = dondeAnio(filtros);
+  if (filtros.departamento && filtros.departamento !== "Todos") {
+    const territorio = `departamento = ${literal(filtros.departamento)}`;
+    return anio === "TRUE" ? territorio : `${anio} AND ${territorio}`;
+  }
+  if (filtros.municipio && filtros.municipio !== "Todos") {
+    const territorio = `cod_departamento = ${literal(filtros.municipio.split("|")[0])}`;
+    return anio === "TRUE" ? territorio : `${anio} AND ${territorio}`;
+  }
+  return null;
+}
+
+export function nombreTerritorio(filtros, municipios = []) {
+  if (filtros.municipio && filtros.municipio !== "Todos") {
+    const [codDepartamento, codMunicipio] = filtros.municipio.split("|");
+    const fila = municipios.find(
+      (item) => item.cod_departamento === codDepartamento && item.cod_municipio === codMunicipio,
+    );
+    return fila?.municipio ?? "Municipio";
+  }
+  if (filtros.departamento && filtros.departamento !== "Todos") return filtros.departamento;
+  return "Nacional";
+}
+
+export function nombreDepartamento(filtros, municipios = []) {
+  if (filtros.departamento && filtros.departamento !== "Todos") return filtros.departamento;
+  if (filtros.municipio && filtros.municipio !== "Todos") {
+    const [codDepartamento, codMunicipio] = filtros.municipio.split("|");
+    return (
+      municipios.find(
+        (item) => item.cod_departamento === codDepartamento && item.cod_municipio === codMunicipio,
+      )?.departamento ?? null
+    );
+  }
+  return null;
+}
+
+export function sqlSerieFecundidad(filtros) {
+  const local = whereTerritorio(filtros, { anio: false });
+  return `
+    WITH nacional AS (${sqlTgfPorAnio("TRUE")}),
+         local AS (${sqlTgfPorAnio(local)})
+    SELECT n.anio,
+           n.tgf AS tgf_nacional,
+           l.tgf AS tgf
+    FROM nacional n
+    LEFT JOIN local l USING (anio)
+    ORDER BY n.anio
+  `;
+}
+
+export function sqlTgfReferencias(filtros) {
+  const departamento = dondeDepartamento(filtros);
+  return `
+    SELECT (${sqlTgfAgregada(dondeAnio(filtros))}) AS nacional
+           ${departamento ? `, (${sqlTgfAgregada(departamento)}) AS departamento` : ""}
   `;
 }
 

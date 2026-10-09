@@ -7,7 +7,7 @@ function Contenido() {
   const { listos } = useFiltros();
 
   if (error) return <p className="estado-pagina">{error}</p>;
-  if (!listo || !listos) return <p className="estado-pagina">Abriendo los datos…</p>;
+  if (!listo || !listos) return <p className="estado-pagina">Cargando los datos… (puede tomar unos segundos)</p>;
   return <Disposicion />;
 }
 

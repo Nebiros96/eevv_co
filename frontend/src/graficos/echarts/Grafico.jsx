@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { COLORES_TEMA, echarts, TEMA } from "@/graficos/echarts/motor";
 
-export function Grafico({ opcion, alto = 320, cargando = false }) {
+export function Grafico({ opcion, alto = 320, llenar = false, cargando = false }) {
   const caja = useRef(null);
   const instancia = useRef(null);
 
@@ -18,7 +18,7 @@ export function Grafico({ opcion, alto = 320, cargando = false }) {
   }, []);
 
   useEffect(() => {
-    instancia.current?.setOption(opcion, { replaceMerge: ["series"] });
+    instancia.current?.setOption(opcion, { replaceMerge: ["series", "graphic"] });
   }, [opcion]);
 
   useEffect(() => {
@@ -35,5 +35,11 @@ export function Grafico({ opcion, alto = 320, cargando = false }) {
     }
   }, [cargando]);
 
-  return <div ref={caja} className="grafica-echarts" style={{ height: alto }} />;
+  return (
+    <div
+      ref={caja}
+      className={llenar ? "grafica-echarts grafica-echarts-llenar" : "grafica-echarts"}
+      style={llenar ? { minHeight: alto } : { height: alto }}
+    />
+  );
 }

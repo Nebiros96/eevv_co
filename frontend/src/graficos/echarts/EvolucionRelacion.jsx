@@ -81,7 +81,7 @@ export function EvolucionRelacion() {
       },
       itemStyle: { color: comparar ? COLORES_TEMA.gris : principal },
       areaStyle: comparar ? undefined : { color: principal, opacity: 0.08 },
-      label: etiqueta(decimal, { position: "top" }),
+      label: etiqueta(decimal, { position: "top", show: !comparar }),
       labelLayout: { hideOverlap: true },
       markLine: lineaAnio(filtros.anio),
     };

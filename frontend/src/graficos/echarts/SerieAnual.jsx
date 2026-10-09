@@ -55,7 +55,7 @@ export function SerieAnual() {
 
   return (
     <Tarjeta
-      titulo="Nacimientos y defunciones por año"
+      titulo="Histórico de Nacimientos y Defunciones"
       cargando={cargando && filas.length === 0}
       error={error}
       alto={340}
