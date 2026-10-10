@@ -1,12 +1,13 @@
 import { FilaIndicadores, Indicador } from "@/componentes/Indicadores";
-import { literal, sqlMapaTasa, sqlRankingTasa, sqlSerieExterna, whereTerritorio } from "@/datos/consultas";
+import { literal, sqlMapaTasa, sqlRankingTasa, whereCausaExterna, whereTerritorio } from "@/datos/consultas";
 import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
-import { decimal } from "@/estilos/tema";
+import { decimal, entero } from "@/estilos/tema";
 import { COLORES_TEMA, ESCALA_RIESGO } from "@/graficos/echarts/motor";
+import { MapaCoropletas } from "@/graficos/echarts/MapaCoropletas";
+import { Piramide } from "@/graficos/echarts/Piramide";
 import { RankingTasas } from "@/graficos/echarts/RankingTasas";
 import { SerieExterna } from "@/graficos/echarts/SerieExterna";
-import { MapaCoropletas } from "@/graficos/echarts/MapaCoropletas";
 
 function extraCausa(filtros) {
   if (!filtros.externa || filtros.externa === "Todas") return "TRUE";
@@ -45,10 +46,6 @@ export function CausasExternas() {
 
   return (
     <>
-      <p className="intro-pagina">
-        Homicidios, suicidios y accidentes por 100.000 habitantes. El mapa municipal evita que el volumen
-        de las ciudades grandes oculte tasas altas en municipios pequeños.
-      </p>
       <FilaIndicadores>
         <Indicador
           titulo="Homicidios"
@@ -71,31 +68,57 @@ export function CausasExternas() {
           tono="diferencia"
         />
       </FilaIndicadores>
-      <SerieExterna sql={sqlSerieExterna(filtros)} />
-      <RankingTasas
-        titulo="Territorios con la tasa más alta por causa externa"
-        sql={sqlRankingTasa(filtros, {
-          tabla: "externas",
-          numerador: "defunciones",
-          escala: 100000,
-          extra,
-          municipal: true,
-        })}
-        color={COLORES_TEMA.defunciones}
-        formato={decimal}
-        nombre="Por 100.000"
-      />
-      <MapaCoropletas
-        titulo={
-          filtros.externa === "Todas" ? "Tasa de defunciones por causa externa por cada 100.000 habitantes a nivel municipal" : `${filtros.externa} por 100.000`
-        }
-        sql={mapaSql}
-        municipal
-        colores={ESCALA_RIESGO}
-        formato={decimal}
-        unidad="Por 100.000"
-        hechoEtiqueta="Defunciones"
-      />
+      <div className="rejilla">
+        <div className="rejilla-completa">
+          <SerieExterna />
+        </div>
+        <RankingTasas
+          titulo="Territorios con la tasa más alta por causa externa"
+          sql={sqlRankingTasa(filtros, {
+            tabla: "externas",
+            numerador: "defunciones",
+            escala: 100000,
+            extra,
+            municipal: true,
+          })}
+          color={COLORES_TEMA.defunciones}
+          formato={decimal}
+          nombre="Por 100.000"
+        />
+        <RankingTasas
+          titulo="Defunciones por causas externas por entidad territorial (Top 10)"
+          sql={`
+            SELECT ${filtros.departamento !== "Todos" || filtros.municipio !== "Todos" ? "municipio" : "departamento"} AS etiqueta,
+                   SUM(defunciones)::DOUBLE AS valor
+            FROM externas
+            WHERE ${territorio} AND ${extra}
+            GROUP BY 1
+            ORDER BY valor DESC
+            LIMIT 10
+          `}
+          color={COLORES_TEMA.relacion}
+          formato={entero}
+          nombre="Defunciones"
+          vacio="No hay causas externas para este territorio."
+        />
+        <MapaCoropletas
+          titulo={
+            filtros.externa === "Todas"
+              ? "Tasa de defunciones por causa externa por cada 100.000 habitantes a nivel municipal"
+              : `${filtros.externa} por 100.000`
+          }
+          sql={mapaSql}
+          municipal
+          colores={ESCALA_RIESGO}
+          formato={decimal}
+          unidad="Por 100.000"
+          hechoEtiqueta="Defunciones"
+        />
+        <Piramide
+          titulo="Defunciones por causas externas por grupo etario y sexo"
+          donde={`${whereTerritorio(filtros)} AND ${whereCausaExterna(filtros)}`}
+        />
+      </div>
     </>
   );
 }

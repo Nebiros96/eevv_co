@@ -29,6 +29,20 @@ export const GRUPOS_MADRE = ["10-14", "15-19", "20-24", "25-29", "30-34", "35-39
 export const GRUPOS_TGF = ["15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49"];
 export const CAUSAS_EXTERNAS = ["Homicidios", "Suicidios", "Accidentes de tránsito", "Otros accidentes", "Otras externas"];
 
+const CODIGOS_EXTERNA = {
+  Homicidios: ["512"],
+  Suicidios: ["511"],
+  "Accidentes de tránsito": ["501"],
+  "Otras externas": ["513", "514"],
+};
+
+export function whereCausaExterna(filtros) {
+  if (!filtros.externa || filtros.externa === "Todas") return "cod_causa LIKE '5%'";
+  const codigos = CODIGOS_EXTERNA[filtros.externa];
+  if (codigos) return `cod_causa IN (${codigos.map(literal).join(", ")})`;
+  return "cod_causa LIKE '5%' AND cod_causa NOT IN ('501', '511', '512', '513', '514')";
+}
+
 export const MADRE_DESDE_POB = `
   CASE grupo_edad
     WHEN 'De 10-14 años' THEN '10-14'
@@ -674,34 +688,6 @@ export function sqlPerfilEdadMadre(filtros, anioBase, anioActual) {
     FROM nac_edad
     WHERE ${territorio} AND grupo_edad_madre <> 'Sin información'
     GROUP BY 1
-  `;
-}
-
-export function sqlSerieExterna(filtros) {
-  const extra =
-    !filtros.externa || filtros.externa === "Todas" ? "TRUE" : `causa = ${literal(filtros.externa)}`;
-  const territorio = whereTerritorio(filtros, { anio: false });
-  return `
-    WITH def AS (
-      SELECT anio, causa, SUM(defunciones)::DOUBLE AS defunciones
-      FROM externas
-      WHERE ${territorio} AND ${extra}
-      GROUP BY 1, 2
-    ),
-    pob AS (
-      SELECT anio, SUM(poblacion)::DOUBLE AS poblacion
-      FROM poblacion
-      WHERE ${territorio}
-      GROUP BY 1
-    )
-    SELECT d.anio, d.causa,
-           SUM(d.defunciones)::DOUBLE AS defunciones,
-           MAX(p.poblacion)::DOUBLE AS poblacion,
-           100000 * SUM(d.defunciones) / NULLIF(MAX(p.poblacion), 0) AS tasa
-    FROM def d
-    JOIN pob p USING (anio)
-    GROUP BY 1, 2
-    ORDER BY 1
   `;
 }
 

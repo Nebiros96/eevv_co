@@ -7,12 +7,16 @@ import { entero, ORDEN_EDAD } from "@/estilos/tema";
 import { Grafico } from "@/graficos/echarts/Grafico";
 import { opcionPiramide } from "@/graficos/echarts/opcionesPiramide";
 
-export function Piramide() {
+export function Piramide({
+  titulo = "Defunciones por grupo etario y sexo",
+  donde = null,
+}) {
   const { filtros } = useFiltros();
+  const condicion = donde ?? whereCausas(filtros);
   const { filas, cargando, error } = useConsulta(`
     SELECT grupo_edad, sexo, SUM(defunciones)::DOUBLE AS defunciones
     FROM causas
-    WHERE ${whereCausas(filtros)}
+    WHERE ${condicion}
       AND sexo IN ('Hombres', 'Mujeres')
     GROUP BY 1, 2
   `);
@@ -34,7 +38,7 @@ export function Piramide() {
 
   return (
     <Tarjeta
-      titulo="Defunciones por grupo etario y sexo"
+      titulo={titulo}
       cargando={cargando && filas.length === 0}
       error={error}
     >
