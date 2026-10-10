@@ -4,6 +4,7 @@ import { useConsulta } from "@/datos/useConsulta";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal, entero } from "@/estilos/tema";
 import { BarrasCausas } from "@/graficos/echarts/BarrasCausas";
+import { NaturalidadTerritorio } from "@/graficos/echarts/NaturalidadTerritorio";
 import { Piramide } from "@/graficos/echarts/Piramide";
 import { TendenciaSexo } from "@/graficos/echarts/TendenciaSexo";
 import { TerritoriosCausa } from "@/graficos/echarts/TerritoriosCausa";
@@ -96,12 +97,13 @@ export function Defunciones() {
         />
       </FilaIndicadores>
       <div className="rejilla">
+        <div className="rejilla-completa">
+          <TendenciaSexo />
+        </div>
+        <TerritoriosCausa />
         <BarrasCausas />
         <Piramide />
-      </div>
-      <div className="rejilla">
-        <TendenciaSexo />
-        <TerritoriosCausa />
+        <NaturalidadTerritorio />
       </div>
     </>
   );

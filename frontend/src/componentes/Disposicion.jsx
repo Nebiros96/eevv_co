@@ -8,21 +8,25 @@ import { Mortalidad } from "@/paginas/Mortalidad";
 import { Panorama } from "@/paginas/Panorama";
 
 const MENU = [
-  { id: "panorama", titulo: "Panorama" },
+  {
+    id: "panorama",
+    titulo: "Panorama",
+    hijos: [{ id: "panorama", titulo: "Panorama" }],
+  },
   {
     id: "nacimientos",
     titulo: "Nacimientos",
     hijos: [
-      { id: "fecundidad", titulo: "Fecundidad" },
       { id: "caida", titulo: "Natalidad" },
+      { id: "fecundidad", titulo: "Fecundidad" },
     ],
   },
   {
     id: "defunciones",
     titulo: "Defunciones",
     hijos: [
-      { id: "causas", titulo: "Causas" },
       { id: "mortalidad", titulo: "Mortalidad" },
+      { id: "causas", titulo: "Causas" },
       { id: "externas", titulo: "Causas externas" },
     ],
   },

@@ -5,6 +5,7 @@ import { useDatos } from "@/datos/DatosProvider";
 import { useFiltros } from "@/estado/FiltrosProvider";
 import { decimal, entero, ORDEN_MADRE, PUNTO_MEDIO_MADRE } from "@/estilos/tema";
 import { EdadMadre } from "@/graficos/echarts/EdadMadre";
+import { NacimientosAnio } from "@/graficos/echarts/NacimientosAnio";
 import { PerfilNatalidad } from "@/graficos/echarts/PerfilNatalidad";
 import { COLORES_TEMA } from "@/graficos/echarts/motor";
 
@@ -36,10 +37,6 @@ export function CaidaNatalidad() {
 
   return (
     <>
-      <p className="intro-pagina">
-        Los nacimientos pasaron de 642.660 en 2019 a 441.537 en 2025 a nivel nacional. La caída no es
-        igual en todos los grupos de edad de la madre, ni por nivel educativo o régimen de salud.
-      </p>
       <FilaIndicadores>
         <Indicador titulo={`Nacimientos ${base}`} valor={entero(nacBase)} tono="diferencia" />
         <Indicador titulo={`Nacimientos ${actual}`} valor={entero(nacActual)} tono="nacimientos" />
@@ -58,8 +55,11 @@ export function CaidaNatalidad() {
           tono="hombres"
         />
       </FilaIndicadores>
-      <EdadMadre filas={edades} anioBase={base} anioActual={actual} />
       <div className="rejilla">
+        <div className="rejilla-completa">
+          <NacimientosAnio />
+        </div>
+        <EdadMadre filas={edades} anioBase={base} anioActual={actual} />
         <PerfilNatalidad
           titulo="Variación por grupo etario de la madre"
           sql={sqlPerfilEdadMadre(filtros, base, actual)}
@@ -74,14 +74,14 @@ export function CaidaNatalidad() {
           anioBase={base}
           anioActual={actual}
         />
+        <PerfilNatalidad
+          titulo="Variación por nivel educativo de la madre"
+          sql={sqlPerfilNatalidad(filtros, "educacion", base, actual)}
+          color={COLORES_TEMA.mujeres}
+          anioBase={base}
+          anioActual={actual}
+        />
       </div>
-      <PerfilNatalidad
-        titulo="Variación por nivel educativo de la madre"
-        sql={sqlPerfilNatalidad(filtros, "educacion", base, actual)}
-        color={COLORES_TEMA.mujeres}
-        anioBase={base}
-        anioActual={actual}
-      />
     </>
   );
 }
